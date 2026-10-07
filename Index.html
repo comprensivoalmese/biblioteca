@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<!-- © 2026 Istituto Comprensivo di Almese (www.comprensivoalmese.it) – sviluppata dal Wolf Team.
+     Tutti i diritti riservati: nessun uso senza permesso scritto della scuola (vedi LICENZA.md) -->
+<html lang="it">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biblioteca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+/* Biblioteca di magia: pergamena su legno scuro, oro e cuoio */
+:root{
+  --legno:#2a1a10; --legno-scuro:#170d07; --legno-chiaro:#4a2e1a;
+  --oro:#d4af5a; --oro-scuro:#9c7a33; --oro-chiaro:#f3dc9a;
+  --carta:#ead7aa; --superficie:#f6ebcd; --bordo:#bf9f63; --testo:#2b1b10; --tenue:#6d5235;
+  --primario:#7b2331; --primario-testo:#f6e7c1; --primario-chiaro:#efd5c0;
+  --verde:#24583f; --verde-chiaro:#dfe7c6;
+  --ambra:#86560f; --ambra-chiaro:#f3dca6; --rosso:#8f2230; --rosso-chiaro:#f2cfc4;
+  --ombra:0 1px 0 rgba(255,255,255,.55) inset,0 3px 8px rgba(70,40,15,.22); --raggio:6px;
+  --titoli:"Cinzel",Georgia,serif;
+  --serif:"EB Garamond",Garamond,"Palatino Linotype",Georgia,serif;
+  --sans:var(--serif);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{color:var(--testo);font:18px/1.45 var(--serif);-webkit-text-size-adjust:100%;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0,rgba(255,184,80,.20),transparent 70%),
+    repeating-linear-gradient(91deg,transparent 0 22px,rgba(0,0,0,.10) 22px 23px,transparent 23px 47px,rgba(255,220,160,.025) 47px 61px),
+    linear-gradient(180deg,#33200f,#21140b 45%,#140b06);
+  background-attachment:fixed;background-color:var(--legno)}
+button,input,select,textarea{font:inherit;color:inherit}
+body,button,input,select,textarea{font-variant-numeric:lining-nums}
+[hidden]{display:none!important}
+body:not(.biblio) .solo-biblio{display:none!important}
+::selection{background:var(--oro-chiaro)}
+
+/* testata: titolo dorato e mensola di libri */
+.testata{display:flex;align-items:center;gap:14px;padding:18px 16px 12px;max-width:1100px;margin:0 auto}
+.marchio{width:48px;height:48px;flex:none;display:grid;place-items:center;color:var(--oro);
+  border:1px solid var(--oro-scuro);border-radius:50%;background:radial-gradient(circle at 50% 35%,#4b2c16,#1d1009);
+  box-shadow:0 0 0 3px rgba(212,175,90,.15),0 0 18px rgba(255,190,90,.25)}
+.testata h1{font:700 1.45rem/1.1 var(--titoli);margin:0;letter-spacing:.04em;color:var(--oro-chiaro);
+  text-shadow:0 0 12px rgba(255,200,110,.45),0 2px 0 #000;animation:candela 5s ease-in-out infinite}
+@keyframes candela{0%,100%{text-shadow:0 0 12px rgba(255,200,110,.45),0 2px 0 #000}45%{text-shadow:0 0 18px rgba(255,200,110,.65),0 2px 0 #000}55%{text-shadow:0 0 9px rgba(255,200,110,.35),0 2px 0 #000}}
+.sottotitolo{color:#cdb17a;font-style:italic;font-size:.95rem}
+.sottotitolo::before{content:"✦ ";color:var(--oro);font-style:normal}
+.scaffale{height:38px;max-width:1100px;margin:0 auto;position:relative;
+  background:
+    linear-gradient(transparent 7px,rgba(222,186,100,.75) 7px 9px,transparent 9px 28px,rgba(222,186,100,.75) 28px 30px,transparent 30px),
+    linear-gradient(90deg,rgba(0,0,0,.35),transparent 3px,rgba(255,255,255,.08) 5px,transparent 8px) 0 0/19px 100%,
+    repeating-linear-gradient(90deg,#6e1f2a 0 16px,#1a0f09 16px 17px,#1f4d3a 17px 29px,#1a0f09 29px 30px,#8a6a2a 30px 40px,#1a0f09 40px 41px,
+      #23344f 41px 58px,#1a0f09 58px 59px,#5a2a4a 59px 69px,#1a0f09 69px 70px,#7a4a1f 70px 89px,#1a0f09 89px 90px,
+      #2f4f4f 90px 101px,#1a0f09 101px 102px,#7b2331 102px 116px,#1a0f09 116px 117px,#3d2a14 117px 131px,#1a0f09 131px 133px);
+  border-bottom:10px solid #5a3820;box-shadow:0 1px 0 #7a5030 inset,0 10px 14px -6px rgba(0,0,0,.7);
+  -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+
+/* schede di navigazione: legno con oro */
+.schede{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;
+  background:linear-gradient(180deg,#3a2414,#1e120a);border-top:2px solid var(--oro-scuro);
+  box-shadow:0 -6px 18px rgba(0,0,0,.5);padding:5px 4px calc(5px + env(safe-area-inset-bottom))}
+.schede button{flex:1;border:0;background:none;padding:6px 2px;border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;gap:2px;font:600 .72rem var(--titoli);letter-spacing:.06em;color:#bfa36e;cursor:pointer}
+.schede button svg{width:24px;height:24px}
+.schede button.attiva{color:var(--oro-chiaro);text-shadow:0 0 10px rgba(255,200,110,.6)}
+.schede button.attiva svg{background:rgba(212,175,90,.18);border-radius:999px;padding:2px 12px;width:50px;
+  box-shadow:0 0 14px rgba(255,200,110,.35);filter:drop-shadow(0 0 4px rgba(255,200,110,.6))}
+@media (min-width:800px){
+  body{padding-bottom:28px}
+  .schede{position:sticky;top:0;bottom:auto;border-top:0;border-bottom:2px solid var(--oro-scuro);justify-content:center;gap:6px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .schede button{flex:none;flex-direction:row;gap:8px;font-size:.85rem;padding:9px 18px}
+  .schede button svg{width:20px;height:20px}
+  .schede button.attiva{background:rgba(212,175,90,.14);box-shadow:inset 0 0 0 1px rgba(212,175,90,.45)}
+  .schede button.attiva svg{background:none;padding:0;width:20px;box-shadow:none}
+}
+
+/* la pagina: un grande foglio di pergamena */
+main{max-width:1100px;margin:14px auto 20px;padding:18px 16px 22px;position:relative;width:calc(100% - 16px);
+  border-radius:3px;border:1px solid #8a6a3a;
+  background:
+    radial-gradient(circle at 15% 8%,rgba(255,255,255,.45),transparent 38%),
+    radial-gradient(circle at 85% 95%,rgba(150,100,40,.22),transparent 45%),
+    radial-gradient(circle at 95% 10%,rgba(150,100,40,.14),transparent 30%),
+    linear-gradient(175deg,#f5e6c2,#ecd7a7);
+  box-shadow:inset 0 0 0 5px rgba(246,235,205,.6),inset 0 0 0 6px rgba(140,100,45,.45),inset 0 0 70px rgba(130,85,30,.38),0 22px 46px rgba(0,0,0,.6)}
+@media (min-width:800px){main{padding:26px 28px 30px}}
+.vista{display:none}
+.vista.attiva{display:block;animation:apri .35s ease-out}
+@keyframes apri{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fregio{display:flex;align-items:center;gap:12px;color:var(--oro-scuro);margin:2px 0 14px;font:600 .8rem var(--titoli);letter-spacing:.14em;text-transform:uppercase}
+.fregio::before,.fregio::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--oro-scuro),transparent)}
+
+/* controlli */
+.bottone,button.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--bordo);
+  background:linear-gradient(#fbf2d9,#ecdbb0);border-radius:6px;padding:9px 16px;cursor:pointer;min-height:44px;text-decoration:none;
+  color:var(--testo);font:600 .86rem var(--titoli);letter-spacing:.04em;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 2px 0 rgba(90,60,25,.25)}
+.bottone:hover,button.b:hover{border-color:var(--oro-scuro)}
+.bottone.primario,button.b.primario{background:linear-gradient(#93303f,#6a1b27);border-color:var(--oro);color:var(--oro-chiaro);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,220,180,.25),0 2px 0 #3a0e14,0 4px 10px rgba(90,20,30,.3)}
+.bottone.primario:hover,button.b.primario:hover{background:linear-gradient(#a13646,#741e2b)}
+button.b.pericolo{color:var(--rosso)}
+button.b.piccolo{min-height:36px;padding:5px 12px;font-size:.78rem}
+button:disabled{opacity:.5;cursor:default}
+input,select,textarea{width:100%;border:1px solid var(--bordo);background:#fcf5e1;border-radius:6px;padding:9px 12px;min-height:44px;
+  font-size:1.05rem;box-shadow:inset 0 1px 3px rgba(90,60,25,.15)}
+input::placeholder,textarea::placeholder{color:#9a8462;font-style:italic}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--oro);outline-offset:1px;border-color:var(--oro-scuro)}
+label.campo{display:block;font:600 .74rem var(--titoli);letter-spacing:.06em;color:var(--tenue);margin-bottom:12px;text-transform:uppercase}
+label.campo>input,label.campo>select,label.campo>textarea{margin-top:4px;color:var(--testo);font:1.05rem var(--serif);text-transform:none;letter-spacing:0}
+label.campo .riga-isbn input{font:1.05rem var(--serif);letter-spacing:0}
+.piccolo{font-size:.92rem;color:var(--tenue)}
+input[type=checkbox]{accent-color:var(--primario)}
+
+/* catalogo */
+.barra-ricerca{display:flex;gap:8px;margin:0 0 10px}
+.barra-ricerca input{flex:1;padding-left:40px;background:#fcf5e1 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239c7a33' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") 12px 50%/20px no-repeat}
+.filtri{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.filtri select{width:auto;flex:1 1 140px;min-height:40px;padding:6px 10px}
+.spunta{display:inline-flex;align-items:center;gap:6px;font-size:1rem;white-space:nowrap}
+.spunta input{width:18px;height:18px;min-height:0}
+#conteggio{font-style:italic}
+.lista{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin-top:10px}
+.libro{display:flex;gap:14px;text-align:left;border:1px solid #c9a96b;border-radius:var(--raggio);padding:11px;cursor:pointer;width:100%;
+  background:linear-gradient(160deg,#fbf3dc,#f1e1b8);box-shadow:var(--ombra);transition:transform .15s,box-shadow .15s,border-color .15s}
+.libro:hover{transform:translateY(-2px);border-color:var(--oro-scuro);box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 8px 18px rgba(70,40,15,.28),0 0 0 3px rgba(212,175,90,.25)}
+.libro-testo{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
+.titolo{font:600 1.14rem/1.2 var(--serif);color:#3a160e;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.autori{color:var(--tenue);font-style:italic;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:5px}
+.tag{font:600 .74rem/1.5 var(--serif);letter-spacing:.08em;text-transform:uppercase;border-radius:3px;padding:2px 7px;
+  border:1px solid rgba(109,82,53,.4);color:var(--tenue);background:rgba(255,255,255,.3)}
+.tag.ok{color:var(--verde);border-color:var(--verde);background:rgba(36,88,63,.07)}
+.tag.no{color:var(--rosso);border-color:var(--rosso);background:rgba(143,34,48,.07)}
+.tag.att{color:var(--ambra);border-color:var(--ambra);background:rgba(134,86,15,.08)}
+/* copertine: libri rilegati in pelle */
+.cop{flex:none;width:58px;height:84px;border-radius:2px 5px 5px 2px;object-fit:cover;background:#5a3820;
+  box-shadow:inset 3px 0 5px rgba(0,0,0,.35),2px 3px 6px rgba(40,20,5,.45),0 0 0 1px rgba(60,30,10,.4)}
+.cop.finta{display:grid;place-items:center;color:var(--oro-chiaro);font:700 1.05rem var(--titoli);letter-spacing:.05em;text-shadow:0 1px 1px rgba(0,0,0,.6);
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.4),transparent 14%,rgba(255,255,255,.12) 18%,transparent 26%),
+    linear-gradient(transparent 10%,var(--oro) 10% 12%,transparent 12% 15%,var(--oro) 15% 16%,transparent 16% 84%,var(--oro) 84% 85%,transparent 85% 88%,var(--oro) 88% 90%,transparent 90%),
+    radial-gradient(circle at 60% 40%,rgba(255,255,255,.12),transparent 60%),
+    var(--pelle,#6e1f2a)}
+.cop.grande{width:112px;height:162px;font-size:1.7rem}
+.vuoto{text-align:center;color:var(--tenue);font-style:italic;padding:40px 12px;font-size:1.1rem}
+.vuoto::before{content:"❦";display:block;font-size:2rem;color:var(--oro-scuro);font-style:normal;margin-bottom:6px}
+.centrato{display:flex;justify-content:center;margin:16px 0 0}
+
+/* scanner: lo specchio magico */
+.scanner-box{position:relative;background:radial-gradient(circle at 50% 40%,#2a1a10,#0d0805);border-radius:10px;overflow:hidden;min-height:230px;
+  display:flex;align-items:center;justify-content:center;max-width:560px;margin:4px auto 12px;
+  border:2px solid var(--oro-scuro);box-shadow:0 0 0 4px #3a2414,0 0 0 5px var(--oro-scuro),0 10px 24px rgba(0,0,0,.45),inset 0 0 40px rgba(0,0,0,.8)}
+#lettore{width:100%}
+#lettore video{display:block;width:100%!important;height:auto}
+.scanner-riposo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--oro-chiaro);
+  text-align:center;padding:24px;font-style:italic;font-size:1.05rem}
+.scanner-riposo::after{content:"";position:absolute;inset:16px;pointer-events:none;
+  background:
+    linear-gradient(var(--oro),var(--oro)) left top/26px 2px,linear-gradient(var(--oro),var(--oro)) left top/2px 26px,
+    linear-gradient(var(--oro),var(--oro)) right top/26px 2px,linear-gradient(var(--oro),var(--oro)) right top/2px 26px,
+    linear-gradient(var(--oro),var(--oro)) left bottom/26px 2px,linear-gradient(var(--oro),var(--oro)) left bottom/2px 26px,
+    linear-gradient(var(--oro),var(--oro)) right bottom/26px 2px,linear-gradient(var(--oro),var(--oro)) right bottom/2px 26px;
+  background-repeat:no-repeat;opacity:.8}
+.scanner-riposo svg{width:64px;height:64px;display:block;margin:0 auto 10px;color:var(--oro);filter:drop-shadow(0 0 8px rgba(255,200,110,.5));animation:luccica 3s ease-in-out infinite}
+@keyframes luccica{50%{opacity:.6}}
+.messaggio{max-width:560px;margin:0 auto 10px;padding:10px 14px;border-radius:6px;background:rgba(255,255,255,.35);border:1px solid var(--bordo);font-size:1rem}
+.messaggio.errore{background:var(--rosso-chiaro);border-color:rgba(143,34,48,.45);color:#6e1823}
+.messaggio.avviso{background:var(--ambra-chiaro);border-color:rgba(134,86,15,.4);color:#5e3c08}
+.azioni-scanner{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;max-width:560px;margin:0 auto 12px}
+.azioni-scanner>*{flex:1 1 200px}
+.riga-isbn{display:flex;gap:8px;max-width:560px;margin:0 auto}
+.riga-isbn input{flex:1}
+.nota-scanner{max-width:560px;margin:8px auto 0;text-align:center;font-style:italic}
+
+/* prestiti: il registro */
+.segmenti{display:flex;border:1px solid var(--bordo);border-radius:6px;padding:3px;gap:3px;margin-bottom:10px;overflow-x:auto;background:rgba(255,255,255,.3)}
+.segmenti button{flex:1;border:0;background:none;padding:8px 10px;border-radius:4px;cursor:pointer;white-space:nowrap;font:600 .98rem var(--serif);color:var(--tenue)}
+.segmenti button.attiva{background:linear-gradient(#93303f,#6a1b27);color:var(--oro-chiaro);box-shadow:inset 0 0 0 1px var(--oro-scuro)}
+.prestito{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid #c9a96b;
+  background:linear-gradient(160deg,#fbf3dc,#f1e1b8);border-radius:var(--raggio);padding:12px 14px;box-shadow:var(--ombra)}
+.prestito.ritardo{border-left:5px solid var(--rosso);background:linear-gradient(160deg,#fbefdc,#f1d9c0)}
+.prestito .chi{font-weight:600;font-size:1.05rem}
+.prestito .azioni{display:flex;gap:6px;flex-wrap:wrap}
+.elenco{display:grid;gap:9px}
+
+/* info */
+.statistiche{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 16px}
+.stat{text-align:center;border:1px solid #c9a96b;border-radius:var(--raggio);padding:14px 10px;background:linear-gradient(160deg,#fbf3dc,#f1e1b8);box-shadow:var(--ombra)}
+.stat b{display:block;font:600 2.2rem/1.1 var(--serif);color:var(--primario)}
+.stat span{color:var(--tenue);font:600 .7rem var(--titoli);letter-spacing:.1em;text-transform:uppercase}
+.scheda-info{border:1px solid #c9a96b;border-radius:var(--raggio);padding:16px 18px;margin-bottom:12px;background:rgba(255,255,255,.28)}
+.scheda-info h2{font:700 1.05rem var(--titoli);letter-spacing:.05em;color:var(--primario);margin:0 0 8px}
+.scheda-info h2::before{content:"✦ ";color:var(--oro-scuro)}
+.scheda-info p{margin:6px 0}
+
+/* finestra: un foglio che si apre */
+dialog{border:1px solid var(--oro-scuro);border-radius:6px;padding:0;width:min(640px,calc(100vw - 20px));max-height:calc(100dvh - 20px);color:var(--testo);
+  background:radial-gradient(circle at 10% 0,rgba(255,255,255,.5),transparent 40%),linear-gradient(175deg,#f6e8c6,#ecd7a7);
+  box-shadow:inset 0 0 0 4px rgba(246,235,205,.7),inset 0 0 0 5px rgba(140,100,45,.45),inset 0 0 50px rgba(130,85,30,.3),0 24px 70px rgba(0,0,0,.7)}
+dialog[open]{animation:apriFin .25s ease-out}
+@keyframes apriFin{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+dialog::backdrop{background:rgba(12,6,2,.72);backdrop-filter:blur(2px)}
+.fin-testa{display:flex;align-items:center;gap:8px;padding:14px 18px 12px;position:sticky;top:0;z-index:1;
+  background:linear-gradient(#f6e8c6,#f1e0b8);border-bottom:1px solid var(--bordo)}
+.fin-testa h2{flex:1;margin:0;font:700 1.05rem var(--titoli);letter-spacing:.06em;color:var(--primario)}
+.fin-testa h2::before{content:"❧ ";color:var(--oro-scuro)}
+.chiudi{border:1px solid var(--bordo);background:rgba(255,255,255,.4);width:36px;height:36px;border-radius:999px;cursor:pointer;font-size:1.3rem;line-height:1;color:var(--tenue)}
+.fin-corpo{padding:16px 18px}
+.fin-piede{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--bordo);position:sticky;bottom:0;
+  background:linear-gradient(#efdcb0,#ead3a2)}
+.dettaglio{display:flex;gap:18px;align-items:flex-start}
+.dettaglio .titolo{font-size:1.4rem;-webkit-line-clamp:unset}
+.righe-meta{margin:8px 0 0;font-size:1rem;color:var(--tenue)}
+.righe-meta div{margin:2px 0}
+.disponibilita{margin:14px 0;padding:11px 14px;border-radius:6px;font:600 1.05rem var(--serif);letter-spacing:.02em;border:1px solid}
+.disponibilita.ok{background:var(--verde-chiaro);color:var(--verde);border-color:rgba(36,88,63,.4)}
+.disponibilita.no{background:var(--rosso-chiaro);color:var(--rosso);border-color:rgba(143,34,48,.4)}
+.descrizione{font-size:1rem;color:var(--tenue);white-space:pre-line;max-height:7.5em;overflow:hidden;position:relative}
+.descrizione::first-letter{font:700 2.1em/1 var(--titoli);float:left;margin:2px 6px 0 0;color:var(--primario)}
+.descrizione.aperta{max-height:none}
+.griglia2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.griglia3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px}
+@media (max-width:520px){.griglia3{grid-template-columns:1fr 1fr}.dettaglio{gap:12px}.cop.grande{width:86px;height:124px}}
+.stato-ricerca{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,.35);border:1px dashed var(--bordo);margin-bottom:14px;font-style:italic}
+.rotella{width:18px;height:18px;border:2px solid rgba(156,122,51,.3);border-top-color:var(--oro-scuro);border-radius:50%;animation:gira .8s linear infinite;flex:none}
+@keyframes gira{to{transform:rotate(360deg)}}
+.proposte{display:flex;flex-direction:column;gap:4px;margin:-6px 0 12px;max-height:260px;overflow-y:auto}
+.proposte:empty{display:none}
+.proposte button{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;border:1px solid var(--bordo);
+  background:#fcf5e1;border-radius:6px;padding:9px 12px;cursor:pointer;min-height:44px}
+.proposte button:hover{border-color:var(--oro-scuro);background:#fff8e6}
+.proposte button span{color:var(--tenue);font:600 .9rem var(--serif);letter-spacing:.04em;white-space:nowrap}
+.anteprima-cop{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+
+/* avvio e avvisi */
+#avvio{display:flex;flex-direction:column;align-items:center;gap:14px;padding:80px 16px;color:var(--oro-chiaro);font-style:italic;font-size:1.15rem;text-align:center}
+#avvio .rotella{width:34px;height:34px;border-width:3px;border-color:rgba(212,175,90,.25);border-top-color:var(--oro)}
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;
+  background:linear-gradient(#3a2414,#1e120a);color:var(--oro-chiaro);border:1px solid var(--oro-scuro);padding:10px 18px;border-radius:6px;
+  transition:.25s;z-index:50;max-width:calc(100vw - 32px);pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#toast.vis{opacity:1;transform:translateX(-50%)}
+#toast.errore{background:linear-gradient(#8f2230,#5e1520);color:#fff1dc}
+@media (min-width:800px){#toast{bottom:28px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="testata">
+  <div class="marchio" aria-hidden="true">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 25c-3-2-7-2.6-11-2V8c4-.6 8 0 11 2 3-2 7-2.6 11-2v15c-4-.6-8 0-11 2z"/><path d="M16 10v15"/>
+      <path d="M16 2.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="currentColor" stroke="none"/>
+      <path d="M24.5 4l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" fill="currentColor" stroke="none"/>
+    </svg>
+  </div>
+  <div>
+    <h1 id="nome-biblioteca">Biblioteca</h1>
+    <div id="chi" class="sottotitolo"></div>
+  </div>
+</header>
+<div class="scaffale" aria-hidden="true"></div>
+
+<nav class="schede" id="schede" hidden>
+  <button data-vista="catalogo" class="attiva">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l3.5-1 3 15.5-3.5 1z"/></svg>Catalogo</button>
+  <button data-vista="scansiona">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>Scansiona</button>
+  <button data-vista="prestiti" class="solo-biblio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg>Prestiti</button>
+  <button data-vista="info">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Info</button>
+</nav>
+
+<div id="avvio"><div class="rotella"></div>Accendo le candele e apro la biblioteca…</div>
+
+<main id="app" hidden>
+  <section id="v-catalogo" class="vista attiva">
+    <div class="fregio">Il catalogo</div>
+    <div class="barra-ricerca">
+      <input id="cerca" type="search" placeholder="Cerca titolo, autore, ISBN, scaffale…" autocomplete="off">
+      <button class="b primario solo-biblio" id="btn-nuovo" title="Aggiungi un libro a mano">+ Nuovo</button>
+    </div>
+    <div class="filtri">
+      <select id="f-genere" aria-label="Genere"></select>
+      <select id="f-fascia" aria-label="Fascia d'età"></select>
+      <label class="spunta"><input type="checkbox" id="f-disp"> Solo disponibili</label>
+    </div>
+    <div id="conteggio" class="piccolo"></div>
+    <div id="lista-libri" class="lista"></div>
+    <div class="centrato"><button class="b" id="altri" hidden>Mostra altri</button></div>
+  </section>
+
+  <section id="v-scansiona" class="vista">
+    <div class="fregio">Scansiona un libro</div>
+    <div class="scanner-box">
+      <div id="lettore"></div>
+      <label id="scanner-riposo" class="scanner-riposo" for="foto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>
+        <span id="riposo-testo">Inquadra il codice a barre sul retro del libro</span>
+      </label>
+    </div>
+    <div id="scanner-msg" class="messaggio" hidden></div>
+    <div class="azioni-scanner">
+      <button class="b primario" id="btn-camera">Avvia fotocamera</button>
+      <a class="bottone primario" id="btn-dal-vivo" target="_top" hidden>Fotocamera dal vivo</a>
+      <label class="bottone" for="foto" id="btn-foto">Scatta una foto del codice</label>
+      <input id="foto" type="file" accept="image/*" capture="environment" hidden>
+    </div>
+    <form id="form-isbn" class="riga-isbn">
+      <input id="isbn-manuale" inputmode="numeric" placeholder="…oppure scrivi l'ISBN" autocomplete="off">
+      <button class="b">Cerca</button>
+    </form>
+    <p class="piccolo nota-scanner">Funziona anche un lettore di codici a barre USB: tocca il campo e scansiona.</p>
+  </section>
+
+  <section id="v-prestiti" class="vista">
+    <div class="fregio">Registro dei prestiti</div>
+    <div class="segmenti" id="seg-prestiti">
+      <button data-f="corso" class="attiva">In corso</button>
+      <button data-f="ritardo">In ritardo</button>
+      <button data-f="chiusi">Restituiti</button>
+    </div>
+    <div class="barra-ricerca"><input id="cerca-prestiti" type="search" placeholder="Cerca lettore, classe, titolo…" autocomplete="off"></div>
+    <div id="lista-prestiti" class="elenco"></div>
+  </section>
+
+  <section id="v-info" class="vista">
+    <div class="fregio">Informazioni</div>
+    <div class="statistiche" id="statistiche"></div>
+    <div id="info-corpo"></div>
+  </section>
+</main>
+
+<dialog id="finestra"></dialog>
+<div id="toast" role="status"></div>
+<div id="file-scan" style="position:absolute;left:-10000px;top:0;width:800px;height:600px"></div>
+
+<!--ANTEPRIMA-->
+<script>
+'use strict';
+const S = { stato: null, vista: 'catalogo', limite: 60, filtroPrestiti: 'corso', riprendiCamera: false };
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ---------------------------------------------------------------- server */
+function chiama(nome, ...arg) {
+  return new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(ko)[nome](...arg));
+}
+async function azione(nome, ...arg) {
+  try {
+    S.stato = await chiama(nome, ...arg);
+    disegna();
+    return true;
+  } catch (e) {
+    avviso(messaggioErrore(e), true);
+    return false;
+  }
+}
+function messaggioErrore(e) {
+  return String((e && e.message) || e || 'Errore').replace(/^Error:\s*/, '').replace(/^Exception:\s*/, '');
+}
+
+/* ---------------------------------------------------------------- aiuti */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const semplice = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const bibliotecario = () => S.stato && S.stato.utente.ruolo === 'bibliotecario';
+function data(iso) { if (!iso) return ''; const p = String(iso).split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso; }
+function giorniTra(a, b) { return Math.round((Date.parse(b) - Date.parse(a)) / 86400000); }
+let timerAvviso;
+function avviso(testo, errore) {
+  const t = $('#toast'); t.textContent = testo; t.className = 'vis' + (errore ? ' errore' : '');
+  clearTimeout(timerAvviso); timerAvviso = setTimeout(() => { t.className = ''; }, errore ? 5000 : 2600);
+}
+
+/* ISBN: accetta ISBN-10 e ISBN-13 (EAN 978/979), restituisce sempre il 13 */
+function cifraEan(d12) { let s = 0; for (let i = 0; i < 12; i++) s += +d12[i] * (i % 2 ? 3 : 1); return String((10 - s % 10) % 10); }
+function normalizzaIsbn(v) {
+  const c = String(v || '').toUpperCase().replace(/[^0-9X]/g, '');
+  if (c.length === 13 && /^97[89]\d{10}$/.test(c) && cifraEan(c) === c[12]) return c;
+  if (c.length === 10 && /^\d{9}[\dX]$/.test(c)) {
+    let s = 0; for (let i = 0; i < 10; i++) s += (c[i] === 'X' ? 10 : +c[i]) * (10 - i);
+    if (s % 11 === 0) { const b = '978' + c.slice(0, 9); return b + cifraEan(b); }
+  }
+  return null;
+}
+
+/* copertine: immagine se c'e', altrimenti un "dorso" colorato con le iniziali */
+const PELLI = ['#6e1f2a', '#1f4d3a', '#23344f', '#5a2a4a', '#6b4a1f', '#2f4f4f', '#7a3b1d', '#3b2a5a'];
+function colore(s) { let h = 0; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) % 997; return PELLI[h % PELLI.length]; }
+function iniziali(t) { return esc(String(t || '?').split(/\s+/).filter(w => w.length > 2 || /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?'); }
+function copertina(l, grande) {
+  const cl = 'cop' + (grande ? ' grande' : '');
+  const finta = `<div class="${cl} finta" style="--pelle:${colore(l.titolo)}">${iniziali(l.titolo)}</div>`;
+  if (!l.copertina) return finta;
+  return `<img class="${cl}" src="${esc(l.copertina)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=this.dataset.f" data-f="${esc(finta)}">`;
+}
+function tagDisponibilita(l) {
+  if (l.disponibili > 0) return `<span class="tag ok">${l.copie > 1 ? l.disponibili + ' su ' + l.copie + ' disponibili' : 'Disponibile'}</span>`;
+  return '<span class="tag no">In prestito</span>';
+}
+
+/* ---------------------------------------------------------------- avvio */
+async function avvia() {
+  try {
+    S.stato = await chiama('carica');
+  } catch (e) {
+    $('#avvio').innerHTML = `<b>Non riesco ad aprire la biblioteca.</b><span>${esc(messaggioErrore(e))}</span><button class="b" onclick="location.reload()">Riprova</button>`;
+    return;
+  }
+  $('#avvio').hidden = true; $('#app').hidden = false; $('#schede').hidden = false;
+  disegna();
+  // Tornati dalla pagina scanner con un ISBN letto: si apre direttamente il libro.
+  const isbn = normalizzaIsbn(await isbnDaIndirizzo());
+  if (isbn) { vai('scansiona'); trovaIsbn(isbn); }
+}
+
+function disegna() {
+  const st = S.stato;
+  document.body.classList.toggle('biblio', bibliotecario());
+  $('#nome-biblioteca').textContent = st.impostazioni.nome;
+  document.title = st.impostazioni.nome;
+  $('#chi').textContent = (st.utente.nome || 'ospite') + (bibliotecario() ? ' · bibliotecario' : ' · consultazione');
+  riempiFiltri();
+  disegnaCatalogo();
+  if (bibliotecario()) disegnaPrestiti();
+  disegnaInfo();
+  linkDalVivo();
+  if ($('#finestra').open && S.riapri) S.riapri();
+}
+
+function vai(vista) {
+  if (S.vista === 'scansiona' && vista !== 'scansiona') fermaCamera();
+  S.vista = vista;
+  $$('#schede button').forEach(b => b.classList.toggle('attiva', b.dataset.vista === vista));
+  $$('.vista').forEach(v => v.classList.toggle('attiva', v.id === 'v-' + vista));
+  window.scrollTo(0, 0);
+  if (vista === 'scansiona') avviaCamera();
+}
+$('#schede').addEventListener('click', e => { const b = e.target.closest('button'); if (b) vai(b.dataset.vista); });
+
+/* ---------------------------------------------------------------- catalogo */
+function riempiFiltri() {
+  const imp = S.stato.impostazioni, libri = S.stato.libri;
+  const unici = (base, campo) => Array.from(new Set(base.concat(libri.map(l => l[campo]).filter(Boolean))));
+  const metti = (sel, voci, tutti) => {
+    const v = sel.value;
+    sel.innerHTML = `<option value="">${tutti}</option>` + voci.map(x => `<option>${esc(x)}</option>`).join('');
+    sel.value = voci.includes(v) ? v : '';
+  };
+  metti($('#f-genere'), unici(imp.generi, 'genere'), 'Tutti i generi');
+  metti($('#f-fascia'), unici(imp.fasce, 'fascia'), "Tutte le età");
+}
+
+function libriFiltrati() {
+  const parole = semplice($('#cerca').value).split(/\s+/).filter(Boolean);
+  const isbn = normalizzaIsbn($('#cerca').value);
+  const genere = $('#f-genere').value, fascia = $('#f-fascia').value, disp = $('#f-disp').checked;
+  return S.stato.libri.filter(l => {
+    if (genere && l.genere !== genere) return false;
+    if (fascia && l.fascia !== fascia) return false;
+    if (disp && l.disponibili < 1) return false;
+    if (isbn) return normalizzaIsbn(l.isbn) === isbn;
+    if (!parole.length) return true;
+    const t = semplice([l.titolo, l.autori, l.editore, l.isbn, l.collocazione, l.genere].join(' '));
+    return parole.every(p => t.includes(p));
+  }).sort((a, b) => semplice(a.titolo).localeCompare(semplice(b.titolo), 'it'));
+}
+
+function disegnaCatalogo() {
+  const tutti = S.stato.libri, lista = libriFiltrati();
+  const copie = tutti.reduce((s, l) => s + l.copie, 0);
+  $('#conteggio').textContent = lista.length === tutti.length
+    ? `${tutti.length} volumi sugli scaffali · ${copie} copie`
+    : `${lista.length} risultati su ${tutti.length} titoli`;
+  if (!tutti.length) {
+    $('#lista-libri').innerHTML = `<div class="vuoto" style="grid-column:1/-1">Il catalogo è vuoto.<br>${bibliotecario() ? 'Vai su <b>Scansiona</b> e inquadra il codice a barre del primo libro.' : ''}</div>`;
+  } else if (!lista.length) {
+    $('#lista-libri').innerHTML = '<div class="vuoto" style="grid-column:1/-1">Nessun volume trovato tra gli scaffali.</div>';
+  } else {
+    $('#lista-libri').innerHTML = lista.slice(0, S.limite).map(l => `
+      <button class="libro" data-id="${esc(l.id)}">
+        ${copertina(l)}
+        <div class="libro-testo">
+          <div class="titolo">${esc(l.titolo)}</div>
+          <div class="autori">${esc(l.autori || 'Autore non indicato')}</div>
+          <div class="meta">${tagDisponibilita(l)}${l.collocazione ? `<span class="tag">Scaffale ${esc(l.collocazione)}</span>` : ''}</div>
+        </div>
+      </button>`).join('');
+  }
+  $('#altri').hidden = lista.length <= S.limite;
+}
+let timerCerca;
+$('#cerca').addEventListener('input', () => { clearTimeout(timerCerca); timerCerca = setTimeout(() => { S.limite = 60; disegnaCatalogo(); }, 120); });
+['#f-genere', '#f-fascia', '#f-disp'].forEach(s => $(s).addEventListener('change', () => { S.limite = 60; disegnaCatalogo(); }));
+$('#altri').addEventListener('click', () => { S.limite += 60; disegnaCatalogo(); });
+$('#lista-libri').addEventListener('click', e => { const b = e.target.closest('.libro'); if (b) apriScheda(b.dataset.id); });
+$('#btn-nuovo').addEventListener('click', () => apriFormLibro({}));
+
+/* ---------------------------------------------------------------- finestra */
+const fin = $('#finestra');
+function apri(titolo, corpo, piede, riapri) {
+  S.riapri = riapri || null;
+  fin.innerHTML = `<div class="fin-testa"><h2>${esc(titolo)}</h2><button class="chiudi" data-chiudi aria-label="Chiudi">×</button></div>
+    <div class="fin-corpo">${corpo}</div>${piede ? `<div class="fin-piede">${piede}</div>` : ''}`;
+  if (!fin.open) fin.showModal();
+  if (document.activeElement && document.activeElement.matches('.chiudi')) document.activeElement.blur();
+}
+function chiudi() { if (fin.open) fin.close(); }
+fin.addEventListener('click', e => { if (e.target.closest('[data-chiudi]') || e.target === fin) chiudi(); });
+fin.addEventListener('close', () => {
+  S.riapri = null;
+  if (S.riprendiCamera && S.vista === 'scansiona') { S.riprendiCamera = false; avviaCamera(); }
+});
+function conferma(domanda, siTesto, poi, indietro) {
+  apri('Sei sicuro?', `<p>${domanda}</p>`, `<button class="b" id="c-no">Annulla</button><button class="b primario" id="c-si">${esc(siTesto)}</button>`);
+  $('#c-no').onclick = indietro || chiudi;
+  $('#c-si').onclick = poi;
+}
+
+/* ---------------------------------------------------------------- scheda libro */
+function apriScheda(id) {
+  const l = S.stato.libri.find(x => x.id === id);
+  if (!l) { chiudi(); return; }
+  const prestiti = (S.stato.prestiti || []).filter(p => p.libroId === id && !p.restituitoIl);
+  const oggi = S.stato.oggi;
+  const righe = [
+    l.editore || l.anno ? `<div>${esc([l.editore, l.anno].filter(Boolean).join(', '))}</div>` : '',
+    l.isbn ? `<div>ISBN ${esc(l.isbn)}</div>` : '',
+    l.pagine ? `<div>${esc(l.pagine)} pagine</div>` : ''
+  ].join('');
+  const tag = [l.genere, l.fascia].filter(Boolean).map(t => `<span class="tag">${esc(t)}</span>`).join('')
+    + (l.collocazione ? `<span class="tag">Scaffale ${esc(l.collocazione)}</span>` : '');
+  const disp = l.disponibili > 0
+    ? `<div class="disponibilita ok">Disponibile${l.copie > 1 ? `: ${l.disponibili} ${l.disponibili === 1 ? 'copia' : 'copie'} su ${l.copie}` : ''}</div>`
+    : `<div class="disponibilita no">In prestito${l.copie > 1 ? ` (tutte le ${l.copie} copie)` : ''}</div>`;
+  const elencoPrestiti = bibliotecario() && prestiti.length ? `<h3 class="piccolo" style="margin:16px 0 8px">IN PRESTITO A</h3><div class="elenco">${prestiti.map(p => rigaPrestito(p, oggi, true)).join('')}</div>` : '';
+  const corpo = `
+    <div class="dettaglio">${copertina(l, true)}
+      <div style="min-width:0">
+        <div class="titolo">${esc(l.titolo)}</div>
+        <div class="autori" style="white-space:normal">${esc(l.autori || 'Autore non indicato')}</div>
+        <div class="righe-meta">${righe}</div>
+        <div class="meta" style="margin-top:8px">${tag}</div>
+      </div>
+    </div>
+    ${disp}
+    ${l.descrizione ? `<div class="descrizione" id="descr">${esc(l.descrizione)}</div><button class="b piccolo" id="descr-tutto" style="margin-top:6px;border:0;padding-left:0;background:none;color:var(--primario)">Leggi tutto</button>` : ''}
+    ${l.note && bibliotecario() ? `<p class="piccolo"><b>Note:</b> ${esc(l.note)}</p>` : ''}
+    ${elencoPrestiti}`;
+  const piede = bibliotecario()
+    ? `<button class="b pericolo" id="s-elimina">Elimina</button><button class="b" id="s-modifica">Modifica</button>
+       <button class="b primario" id="s-presta" ${l.disponibili < 1 ? 'disabled' : ''}>Presta</button>`
+    : `<button class="b" data-chiudi>Chiudi</button>`;
+  apri('Scheda del libro', corpo, piede, () => apriScheda(id));
+  const d = $('#descr');
+  if (d && d.scrollHeight <= d.clientHeight + 2) $('#descr-tutto').remove();
+  else if (d) $('#descr-tutto').onclick = e => { d.classList.add('aperta'); e.target.remove(); };
+  if (!bibliotecario()) return;
+  $('#s-modifica').onclick = () => apriFormLibro(l);
+  $('#s-presta').onclick = () => apriFormPrestito(l);
+  $('#s-elimina').onclick = () => conferma(`Eliminare <b>${esc(l.titolo)}</b> dal catalogo? I prestiti passati restano nel registro.`, 'Elimina',
+    async () => { if (await azione('eliminaLibro', l.id)) { chiudi(); avviso('Libro eliminato'); } }, () => apriScheda(id));
+  collegaAzioniPrestito(fin);
+}
+
+/* ---------------------------------------------------------------- nuovo / modifica libro */
+function apriFormLibro(l, cercaDati) {
+  const imp = S.stato.impostazioni;
+  const opzioni = (voci, val) => '<option value=""></option>' + Array.from(new Set(voci.concat(val ? [val] : [])))
+    .map(v => `<option ${v === val ? 'selected' : ''}>${esc(v)}</option>`).join('');
+  const collocazioni = Array.from(new Set(S.stato.libri.map(x => x.collocazione).filter(Boolean))).sort();
+  const nuovo = !l.id;
+  const corpo = `
+    <form id="form-libro" autocomplete="off">
+      <div id="stato-ricerca"></div>
+      <div class="anteprima-cop"><div id="cop-anteprima">${copertina(l)}</div>
+        <label class="campo" style="flex:1;margin:0">ISBN
+          <div class="riga-isbn" style="margin-top:4px"><input name="isbn" inputmode="numeric" value="${esc(l.isbn)}">
+          <button type="button" class="b" id="b-cerca-online" title="Cerca titolo, autori e copertina online">Cerca online</button></div>
+        </label>
+      </div>
+      <label class="campo">Titolo *<input name="titolo" required value="${esc(l.titolo)}"></label>
+      <label class="campo">Autori<input name="autori" value="${esc(l.autori)}" placeholder="Nome Cognome, Nome Cognome"></label>
+      <div class="griglia3">
+        <label class="campo" style="grid-column:span 2">Editore<input name="editore" value="${esc(l.editore)}"></label>
+        <label class="campo">Anno<input name="anno" inputmode="numeric" value="${esc(l.anno)}"></label>
+      </div>
+      <div class="griglia2">
+        <label class="campo">Genere<select name="genere">${opzioni(imp.generi, l.genere)}</select></label>
+        <label class="campo">Fascia d'età<select name="fascia">${opzioni(imp.fasce, l.fascia)}</select></label>
+      </div>
+      <div class="griglia3">
+        <label class="campo">Scaffale<input name="collocazione" list="collocazioni" value="${esc(l.collocazione)}" placeholder="es. A3"></label>
+        <label class="campo">Copie<input name="copie" type="number" min="1" value="${esc(l.copie || 1)}"></label>
+        <label class="campo">Pagine<input name="pagine" inputmode="numeric" value="${esc(l.pagine)}"></label>
+      </div>
+      <label class="campo">Descrizione<textarea name="descrizione">${esc(l.descrizione)}</textarea></label>
+      <label class="campo">Note interne<input name="note" value="${esc(l.note)}" placeholder="es. dono della classe 3B, copertina rovinata"></label>
+      <input type="hidden" name="copertina" value="${esc(l.copertina)}">
+      <datalist id="collocazioni">${collocazioni.map(c => `<option value="${esc(c)}">`).join('')}</datalist>
+    </form>`;
+  const piede = `<button class="b" id="f-annulla">Annulla</button><button class="b primario" id="f-salva">${nuovo ? 'Aggiungi al catalogo' : 'Salva'}</button>`;
+  apri(nuovo ? 'Nuovo libro' : 'Modifica libro', corpo, piede);
+  const form = $('#form-libro');
+  $('#f-annulla').onclick = () => (nuovo ? chiudi() : apriScheda(l.id));
+  $('#b-cerca-online').onclick = () => compilaDaInternet(form, true);
+  form.isbn.addEventListener('change', () => { if (!form.titolo.value) compilaDaInternet(form, false); });
+  $('#f-salva').onclick = async () => {
+    if (!form.titolo.value.trim()) { form.titolo.focus(); avviso('Manca il titolo', true); return; }
+    const dati = Object.fromEntries(new FormData(form));
+    const n = normalizzaIsbn(dati.isbn);
+    if (dati.isbn.trim() && !n) { avviso('ISBN non valido: controlla le cifre', true); form.isbn.focus(); return; }
+    dati.isbn = n || '';
+    dati.id = l.id || '';
+    $('#f-salva').disabled = true;
+    const ok = await azione('salvaLibro', dati);
+    if (!ok) { $('#f-salva').disabled = false; return; }
+    avviso(nuovo ? 'Libro aggiunto al catalogo' : 'Modifiche salvate');
+    const salvato = S.stato.libri.find(x => (l.id ? x.id === l.id : (dati.isbn && x.isbn === dati.isbn) || x.titolo === dati.titolo.trim()));
+    if (salvato) apriScheda(salvato.id); else chiudi();
+  };
+  if (cercaDati) compilaDaInternet(form, false);
+  else if (nuovo) form.isbn.focus();
+}
+
+async function compilaDaInternet(form, sovrascrivi) {
+  const isbn = normalizzaIsbn(form.isbn.value);
+  const box = $('#stato-ricerca');
+  if (!isbn) { box.innerHTML = '<div class="messaggio avviso" style="margin:0 0 14px">Scrivi un ISBN valido (10 o 13 cifre).</div>'; return; }
+  form.isbn.value = isbn;
+  box.innerHTML = '<div class="stato-ricerca"><div class="rotella"></div>Cerco titolo, autori e copertina…</div>';
+  const r = await cercaOnline(isbn);
+  if (!document.body.contains(form)) return;
+  if (!r.trovato) {
+    box.innerHTML = '<div class="messaggio avviso" style="margin:0 0 14px">Non ho trovato questo ISBN online: compila i campi a mano.</div>';
+    form.titolo.focus();
+    return;
+  }
+  ['titolo', 'autori', 'editore', 'anno', 'pagine', 'descrizione', 'copertina'].forEach(k => {
+    if (r[k] && (sovrascrivi || !form[k].value.trim())) form[k].value = r[k];
+  });
+  $('#cop-anteprima').innerHTML = copertina({ titolo: form.titolo.value, copertina: form.copertina.value });
+  box.innerHTML = `<div class="messaggio" style="margin:0 0 14px">Dati trovati su ${esc(r.fonti.join(' e '))}: controllali, poi scegli genere, fascia e scaffale.</div>`;
+}
+
+/* Cerca i dati del libro: Google Books e Open Library (dal browser; se non va, tramite il server). */
+async function cercaOnline(isbn) {
+  const json = async url => { const x = await fetch(url); if (!x.ok) throw new Error(x.status); return x.json(); };
+  let [g, o] = (await Promise.allSettled([
+    json('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn),
+    json('https://openlibrary.org/api/books?bibkeys=ISBN:' + isbn + '&format=json&jscmd=data')
+  ])).map(x => (x.status === 'fulfilled' ? x.value : null));
+  if (!g && !o) {
+    try {
+      const t = await chiama('cercaOnline', isbn);
+      g = t.google ? JSON.parse(t.google) : null;
+      o = t.openlibrary ? JSON.parse(t.openlibrary) : null;
+    } catch (e) { /* niente rete: si compila a mano */ }
+  }
+  const r = { fonti: [] };
+  const v = g && g.items && g.items[0] && g.items[0].volumeInfo;
+  if (v) {
+    r.fonti.push('Google Libri');
+    r.titolo = v.title ? v.title + (v.subtitle ? '. ' + v.subtitle : '') : '';
+    r.autori = (v.authors || []).join(', ');
+    r.editore = v.publisher || '';
+    r.anno = (String(v.publishedDate || '').match(/\d{4}/) || [''])[0];
+    r.pagine = v.pageCount || '';
+    r.descrizione = v.description || '';
+    const im = v.imageLinks;
+    if (im) r.copertina = String(im.thumbnail || im.smallThumbnail || '').replace(/^http:/, 'https:').replace('&edge=curl', '');
+  }
+  const ol = o && o['ISBN:' + isbn];
+  if (ol) {
+    r.fonti.push('Open Library');
+    r.titolo = r.titolo || (ol.title ? ol.title + (ol.subtitle ? '. ' + ol.subtitle : '') : '');
+    r.autori = r.autori || (ol.authors || []).map(a => a.name).join(', ');
+    r.editore = r.editore || (ol.publishers || []).map(p => p.name).join(', ');
+    r.anno = r.anno || (String(ol.publish_date || '').match(/\d{4}/) || [''])[0];
+    r.pagine = r.pagine || ol.number_of_pages || '';
+    if (!r.copertina && ol.cover) r.copertina = ol.cover.medium || ol.cover.large || ol.cover.small || '';
+  }
+  r.trovato = !!(r.titolo);
+  return r;
+}
+
+/* ---------------------------------------------------------------- prestiti */
+/* Stesse regole del server (presta in Codice.gs): qui servono a mostrarle prima di premere. */
+const parole = s => semplice(s).split(/[^a-z']+/).filter(Boolean).sort().join(' ');
+const stessoNome = (a, b) => semplice(a).replace(/[^a-z]/g, '') === semplice(b).replace(/[^a-z]/g, '');
+function situazioneLettore(nome, esterno) {
+  const imp = S.stato.impostazioni, oggi = S.stato.oggi;
+  const attivi = (S.stato.prestiti || []).filter(p => !p.restituitoIl && stessoNome(p.lettore, nome));
+  const ritardi = attivi.filter(p => p.scadenza < oggi);
+  const problemi = [];
+  if (imp.bloccaRitardi && ritardi.length) problemi.push(`deve ancora restituire «${ritardi[0].titolo}» (scaduto il ${data(ritardi[0].scadenza)})`);
+  if (!esterno && imp.libriPerAlunno > 0 && attivi.length >= imp.libriPerAlunno) problemi.push(`ha già ${attivi.length} libri in prestito (massimo ${imp.libriPerAlunno})`);
+  return { attivi, ritardi, problemi };
+}
+
+function apriFormPrestito(l) {
+  const imp = S.stato.impostazioni, alunni = S.stato.alunni || [];
+  const passati = S.stato.prestiti || [];
+  // Chi non e' negli elenchi ma ha gia' preso libri (docenti, personale)
+  const esterniNoti = Array.from(new Set(passati.map(p => p.lettore)))
+    .filter(n => n && !alunni.some(a => stessoNome(a.n, n)))
+    .map(n => ({ n, c: (passati.find(p => p.lettore === n) || {}).classe || '', esterno: true }));
+  const regole = [`${imp.giorniPrestito} giorni`,
+    imp.libriPerAlunno > 0 ? `max ${imp.libriPerAlunno} libri per alunno` : 'nessun limite di libri',
+    imp.bloccaRitardi ? 'niente prestiti a chi è in ritardo' : '',
+    imp.soloElenchi ? 'solo alunni degli elenchi' : ''].filter(Boolean).join(' · ');
+  apri('Presta il libro', `
+    <p style="margin-top:0"><b>${esc(l.titolo)}</b><br><span class="piccolo">${esc(l.autori)}</span></p>
+    <form id="form-prestito" autocomplete="off">
+      <label class="campo">Chi lo prende *<input name="lettore" required placeholder="Scrivi cognome o nome, oppure la classe (es. 2B)"></label>
+      <div id="proposte" class="proposte"></div>
+      <div id="situazione"></div>
+      <div class="griglia2">
+        <label class="campo">Classe<input name="classe" placeholder="es. 3B"></label>
+        <label class="campo">Giorni di prestito<input name="giorni" type="number" min="1" value="${imp.giorniPrestito}"></label>
+      </div>
+      <label class="spunta" style="margin:0 0 12px"><input type="checkbox" name="esterno"> Non è un alunno (docente, personale)</label>
+      <label class="campo">Note<input name="note"></label>
+      <p class="piccolo" style="margin:0">Regole: ${esc(regole)}. Si cambiano nel foglio Impostazioni.</p>
+    </form>`,
+    `<button class="b" id="p-annulla">Annulla</button><button class="b primario" id="p-ok">Registra il prestito</button>`);
+  const form = $('#form-prestito');
+  const scelto = { alunno: null };
+
+  const mostraProposte = () => {
+    const q = semplice(form.lettore.value).trim();
+    const box = $('#proposte');
+    if (q.length < 2 || scelto.alunno) { box.innerHTML = ''; return; }
+    const pezzi = q.split(/\s+/);
+    const classe = q.replace(/\s+/g, '').toUpperCase();
+    const trovati = alunni.concat(esterniNoti).filter(a => a.c === classe
+      || pezzi.every(p => semplice(a.n).split(/\s+/).some(w => w.startsWith(p)))).slice(0, 40);
+    box.innerHTML = trovati.length
+      ? trovati.map((a, i) => `<button type="button" data-i="${i}"><b>${esc(a.n)}</b><span>${esc(a.c)}${a.esterno ? ' · non in elenco' : ''}</span></button>`).join('')
+      : alunni.length ? '<div class="piccolo" style="padding:6px 2px">Nessun alunno con questo nome negli elenchi.</div>' : '';
+    box.onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const a = trovati[+b.dataset.i];
+      scelto.alunno = a;
+      form.lettore.value = a.n; form.classe.value = a.c; form.esterno.checked = !!a.esterno;
+      box.innerHTML = ''; aggiornaSituazione();
+    };
+  };
+  const aggiornaSituazione = () => {
+    const nome = form.lettore.value.trim(), esterno = form.esterno.checked;
+    const box = $('#situazione');
+    let blocco = '';
+    if (!nome) { box.innerHTML = ''; $('#p-ok').disabled = false; return; }
+    const inElenco = alunni.find(a => parole(a.n) === parole(nome) && (!form.classe.value || a.c === form.classe.value.trim().toUpperCase()))
+      || alunni.find(a => parole(a.n) === parole(nome));
+    if (!esterno && !inElenco && imp.soloElenchi && alunni.length) blocco = 'non è negli elenchi degli alunni: sceglilo dalla lista oppure segna “Non è un alunno”';
+    const s = situazioneLettore(nome, esterno);
+    const problemi = (blocco ? [blocco] : []).concat(s.problemi);
+    const inMano = s.attivi.length ? `<div class="piccolo" style="margin-top:4px">In prestito: ${s.attivi.map(p => `«${esc(p.titolo)}» fino al ${data(p.scadenza)}`).join('; ')}</div>` : '';
+    const staScegliendo = blocco && !s.problemi.length && $('#proposte button');
+    box.innerHTML = staScegliendo
+      ? '<p class="piccolo" style="margin:-4px 0 12px">Tocca il nome giusto nella lista.</p>'
+      : problemi.length
+      ? `<div class="messaggio errore" style="margin:0 0 12px"><b>Prestito non possibile:</b> ${esc(nome)} ${problemi.map(esc).join(', ')}.${inMano}</div>`
+      : (inElenco || esterno)
+        ? `<div class="messaggio" style="margin:0 0 12px">✓ ${esc(nome)}${inElenco && inElenco.c ? ' · ' + esc(inElenco.c) : ''}: può prendere il libro.${inMano}</div>`
+        : '';
+    $('#p-ok').disabled = problemi.length > 0;
+  };
+  form.lettore.addEventListener('input', () => { scelto.alunno = null; mostraProposte(); aggiornaSituazione(); });
+  form.classe.addEventListener('input', aggiornaSituazione);
+  form.esterno.addEventListener('change', aggiornaSituazione);
+  form.lettore.focus();
+  $('#p-annulla').onclick = () => apriScheda(l.id);
+  const invia = async () => {
+    if (!form.lettore.value.trim()) { form.lettore.focus(); avviso('Scrivi chi prende il libro', true); return; }
+    if ($('#p-ok').disabled) return;
+    const d = Object.fromEntries(new FormData(form)); d.libroId = l.id; d.esterno = form.esterno.checked;
+    $('#p-ok').disabled = true;
+    if (await azione('presta', d)) { avviso('Prestito registrato'); apriScheda(l.id); }
+    else $('#p-ok').disabled = false;
+  };
+  $('#p-ok').onclick = invia;
+  form.addEventListener('submit', e => { e.preventDefault(); invia(); });
+}
+
+function rigaPrestito(p, oggi, compatta) {
+  const ritardo = !p.restituitoIl && p.scadenza < oggi;
+  let quando;
+  if (p.restituitoIl) quando = `dal ${data(p.prestatoIl)} · restituito il ${data(p.restituitoIl)}`;
+  else {
+    const g = giorniTra(oggi, p.scadenza);
+    quando = `dal ${data(p.prestatoIl)} · ` + (ritardo
+      ? `<span class="tag no">in ritardo di ${-g} ${-g === 1 ? 'giorno' : 'giorni'}</span>`
+      : g === 0 ? '<span class="tag att">scade oggi</span>'
+        : g <= 3 ? `<span class="tag att">scade il ${data(p.scadenza)}</span>` : `scade il ${data(p.scadenza)}`);
+  }
+  return `<div class="prestito${ritardo ? ' ritardo' : ''}">
+    <div style="min-width:0;flex:1 1 220px">
+      ${compatta ? '' : `<div class="titolo" style="font-size:.98rem">${esc(p.titolo)}</div>`}
+      <div class="chi">${esc(p.lettore)}${p.classe ? ` <span class="piccolo">· ${esc(p.classe)}</span>` : ''}</div>
+      <div class="piccolo">${quando}</div>
+      ${p.note ? `<div class="piccolo">${esc(p.note)}</div>` : ''}
+    </div>
+    ${p.restituitoIl ? '' : `<div class="azioni">
+      <button class="b piccolo" data-proroga="${esc(p.id)}">Proroga</button>
+      <button class="b piccolo primario" data-restituisci="${esc(p.id)}">Restituito</button></div>`}
+  </div>`;
+}
+function collegaAzioniPrestito(contenitore) {
+  contenitore.querySelectorAll('[data-restituisci]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    if (await azione('restituisci', b.dataset.restituisci)) avviso('Restituzione registrata');
+    else b.disabled = false;
+  });
+  contenitore.querySelectorAll('[data-proroga]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const g = S.stato.impostazioni.giorniPrestito;
+    if (await azione('proroga', b.dataset.proroga, g)) avviso(`Prestito prorogato di ${g} giorni`);
+    else b.disabled = false;
+  });
+}
+
+function disegnaPrestiti() {
+  const oggi = S.stato.oggi, f = S.filtroPrestiti;
+  const parole = semplice($('#cerca-prestiti').value).split(/\s+/).filter(Boolean);
+  let lista = (S.stato.prestiti || []).filter(p =>
+    f === 'chiusi' ? p.restituitoIl : !p.restituitoIl && (f !== 'ritardo' || p.scadenza < oggi));
+  if (parole.length) lista = lista.filter(p => { const t = semplice([p.lettore, p.classe, p.titolo, p.isbn].join(' ')); return parole.every(x => t.includes(x)); });
+  lista.sort(f === 'chiusi' ? (a, b) => (b.restituitoIl > a.restituitoIl ? 1 : -1) : (a, b) => (a.scadenza > b.scadenza ? 1 : -1));
+  const nRitardo = (S.stato.prestiti || []).filter(p => !p.restituitoIl && p.scadenza < oggi).length;
+  $('#seg-prestiti [data-f="ritardo"]').textContent = 'In ritardo' + (nRitardo ? ` (${nRitardo})` : '');
+  $('#lista-prestiti').innerHTML = lista.length ? lista.slice(0, 300).map(p => rigaPrestito(p, oggi)).join('')
+    : `<div class="vuoto">${f === 'ritardo' ? 'Nessun prestito in ritardo.' : f === 'chiusi' ? 'Nessuna restituzione registrata.' : 'Nessun libro in prestito.'}</div>`;
+  collegaAzioniPrestito($('#lista-prestiti'));
+}
+$('#seg-prestiti').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.filtroPrestiti = b.dataset.f;
+  $$('#seg-prestiti button').forEach(x => x.classList.toggle('attiva', x === b));
+  disegnaPrestiti();
+});
+$('#cerca-prestiti').addEventListener('input', disegnaPrestiti);
+
+/* ---------------------------------------------------------------- info */
+function disegnaInfo() {
+  const st = S.stato, oggi = st.oggi;
+  const copie = st.libri.reduce((s, l) => s + l.copie, 0);
+  const fuori = st.libri.reduce((s, l) => s + l.inPrestito, 0);
+  const stat = [[st.libri.length, 'titoli'], [copie, 'copie'], [fuori, 'in prestito']];
+  if (bibliotecario()) stat.push([(st.prestiti || []).filter(p => !p.restituitoIl && p.scadenza < oggi).length, 'in ritardo']);
+  $('#statistiche').innerHTML = stat.map(([n, t]) => `<div class="stat"><b>${n}</b><span>${t}</span></div>`).join('');
+  $('#info-corpo').innerHTML = `
+    <div class="scheda-info">
+      <h2>Il tuo accesso</h2>
+      <p>${esc(st.utente.email || 'Utente non riconosciuto')} — ${bibliotecario() ? '<b>bibliotecario</b>: puoi aggiungere libri e registrare i prestiti.' : '<b>consultazione</b>: puoi cercare i libri e vedere se sono disponibili.'}</p>
+      <button class="b" id="b-aggiorna">Aggiorna i dati</button>
+    </div>
+    ${bibliotecario() ? `<div class="scheda-info">
+      <h2>Database</h2>
+      <p>Tutti i dati sono nel Foglio Google <b>Biblioteca - Database</b>, nella cartella della biblioteca su Drive.</p>
+      <p class="piccolo">Nel foglio <b>Utenti</b> aggiungi l'email dei colleghi con ruolo <b>bibliotecario</b> per farli gestire i prestiti. Nel foglio <b>Impostazioni</b> cambi nome della biblioteca, giorni di prestito, generi e fasce d'età.</p>
+      <a class="bottone" href="${esc(st.dbUrl)}" target="_blank" rel="noopener">Apri il database</a>
+    </div>
+    <div class="scheda-info">
+      <h2>Elenchi alunni</h2>
+      <p>${(st.alunni || []).length ? `<b>${st.alunni.length}</b> alunni letti dalla cartella <b>ELENCHI</b>: quando registri un prestito basta scrivere le prime lettere del nome.` : 'Nessun alunno trovato nella cartella <b>ELENCHI</b>. Servono Fogli Google con le colonne Cognome e Nome (oppure Alunno) e Classe.'}</p>
+      <p class="piccolo">Gli elenchi li vedono solo i bibliotecari. Se cambi un elenco, premi “Rileggi gli elenchi”.</p>
+      <button class="b" id="b-elenchi">Rileggi gli elenchi</button>
+    </div>` : ''}
+    <div class="scheda-info">
+      <h2>Come si usa</h2>
+      <p><b>Cercare un libro:</b> scrivi nella ricerca del Catalogo, oppure inquadra il codice a barre in Scansiona.</p>
+      ${bibliotecario() ? `<p><b>Aggiungere un libro:</b> Scansiona → inquadra il codice a barre (ISBN, inizia con 978) → titolo e autori arrivano da soli → scegli scaffale e genere → Aggiungi.</p>
+      <p><b>Prestito:</b> scansiona il libro → Presta → nome e classe.</p>
+      <p><b>Restituzione:</b> scansiona il libro → Restituito (oppure dalla scheda Prestiti).</p>` : ''}
+      <p class="piccolo">Sul telefono: dal menu del browser scegli “Aggiungi a schermata Home” per averla come un'app.</p>
+    </div>
+    <div class="scheda-info credito">
+      <p class="piccolo">© 2026 Istituto Comprensivo di Almese (<a href="https://www.comprensivoalmese.it" target="_blank" rel="noopener">www.comprensivoalmese.it</a>) – sviluppata dal <b>Wolf Team</b>.
+      Tutti i diritti riservati: il codice si può usare solo con il permesso scritto della scuola, che può concederlo in licenza a chi ne fa richiesta.</p>
+    </div>`;
+  $('#b-aggiorna').onclick = async () => { if (await azione('carica')) avviso('Dati aggiornati'); };
+  if ($('#b-elenchi')) $('#b-elenchi').onclick = async () => { if (await azione('carica', true)) avviso(`Elenchi riletti: ${(S.stato.alunni || []).length} alunni`); };
+}
+
+/* ---------------------------------------------------------------- scanner */
+let scanner = null, scannerFile = null, cameraAttiva = false, avvioInCorso = false, ultimo = '', ultimoTempo = 0;
+function formati() {
+  const F = window.Html5QrcodeSupportedFormats;
+  return F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined;
+}
+function msgScanner(testo, tipo) {
+  const m = $('#scanner-msg');
+  m.hidden = !testo; m.className = 'messaggio' + (tipo ? ' ' + tipo : ''); m.innerHTML = testo || '';
+}
+/*
+ * Fotocamera dal vivo o foto? Dentro la pagina di Google (Apps Script) la cornice non ha il permesso
+ * "camera": la fotocamera dal vivo non puo' partire. Allora si usa la fotocamera del tablet per una foto,
+ * da cui si legge il codice (funziona ovunque).
+ */
+const politica = document.permissionsPolicy || document.featurePolicy;
+let dalVivo = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+  && !(politica && politica.allowsFeature && !politica.allowsFeature('camera'));
+function modalitaFoto() {
+  dalVivo = false;
+  $('#btn-camera').hidden = true;
+  const b = $('#btn-foto');
+  b.classList.add('primario'); b.textContent = 'Fotografa il codice a barre';
+  $('#riposo-testo').innerHTML = 'Tocca qui per fotografare il codice a barre<br><small style="opacity:.8">da vicino, dritto e ben illuminato</small>';
+  $('#scanner-riposo').style.cursor = 'pointer';
+}
+if (!dalVivo) modalitaFoto();
+/* Dentro Apps Script la fotocamera dal vivo e' bloccata: se nelle Impostazioni c'e' l'indirizzo della pagina
+   scanner/index.html (https, fuori da Google) il pulsante "Fotocamera dal vivo" la apre e, letto il codice,
+   torna qui con ?isbn=... */
+function linkDalVivo() {
+  const b = $('#btn-dal-vivo'), st = S.stato || {};
+  const base = st.impostazioni && st.impostazioni.scanner, app = st.indirizzoApp;
+  if (dalVivo || !base || !app) { b.hidden = true; return; }
+  b.href = base + (base.includes('?') ? '&' : '?') + 'r=' + encodeURIComponent(app) + '&n=' + encodeURIComponent(st.impostazioni.nome || '');
+  b.hidden = false;
+  const f = $('#btn-foto'); f.classList.remove('primario'); f.textContent = 'Scatta una foto del codice';
+  $('#riposo-testo').innerHTML = 'Tocca “Fotocamera dal vivo” per inquadrare il codice a barre<br><small style="opacity:.8">oppure fotografalo da vicino, dritto e ben illuminato</small>';
+}
+function isbnDaIndirizzo() {
+  return new Promise(ok => {
+    try {
+      if (google.script.url && google.script.url.getLocation) return google.script.url.getLocation(l => ok((l && l.parameter && l.parameter.isbn) || ''));
+    } catch (e) { /* senza indirizzo */ }
+    ok('');
+  });
+}
+$('#scanner-riposo').addEventListener('click', e => { if (dalVivo) { e.preventDefault(); avviaCamera(); } });
+
+function bottoneCamera() {
+  $('#btn-camera').textContent = cameraAttiva ? 'Ferma fotocamera' : 'Avvia fotocamera';
+  $('#scanner-riposo').hidden = cameraAttiva;
+}
+async function avviaCamera() {
+  if (!dalVivo || cameraAttiva || avvioInCorso) return;
+  if (!window.Html5Qrcode) { msgScanner('Il lettore di codici non si è caricato: controlla la connessione e ricarica la pagina.', 'errore'); return; }
+  avvioInCorso = true;
+  try {
+    if (!scanner) scanner = new Html5Qrcode('lettore', { formatsToSupport: formati(), verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+    msgScanner('');
+    await scanner.start({ facingMode: 'environment' },
+      { fps: 12, qrbox: (w, h) => ({ width: Math.max(60, Math.floor(Math.min(w * 0.85, 380))), height: Math.max(60, Math.floor(Math.min(h * 0.45, 170))) }) },
+      codiceLetto, () => {});
+    cameraAttiva = true;
+    if (S.vista !== 'scansiona') fermaCamera();
+  } catch (e) {
+    cameraAttiva = false;
+    modalitaFoto();
+    const negato = /NotAllowed|Permission/i.test(String(e && (e.name || e)));
+    if (negato) msgScanner('La fotocamera dal vivo non è permessa qui: fotografa il codice, funziona lo stesso.', 'avviso');
+  }
+  avvioInCorso = false;
+  bottoneCamera();
+}
+async function fermaCamera() {
+  if (scanner && cameraAttiva) { try { await scanner.stop(); } catch (e) { /* gia' ferma */ } }
+  cameraAttiva = false;
+  bottoneCamera();
+}
+$('#btn-camera').addEventListener('click', () => (cameraAttiva ? fermaCamera() : avviaCamera()));
+
+function codiceLetto(testo) {
+  const isbn = normalizzaIsbn(testo);
+  if (!isbn) { msgScanner(`Il codice ${esc(testo)} non è un ISBN: cerca quello che inizia con 978 o 979.`, 'avviso'); return; }
+  const ora = Date.now();
+  if (isbn === ultimo && ora - ultimoTempo < 4000) return;
+  ultimo = isbn; ultimoTempo = ora;
+  segnale();
+  msgScanner('');
+  fermaCamera().then(() => { S.riprendiCamera = true; trovaIsbn(isbn); });
+}
+function segnale() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain();
+    o.frequency.value = 1320; g.gain.value = 0.08; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.12);
+  } catch (e) { /* senza audio va bene lo stesso */ }
+  if (navigator.vibrate) navigator.vibrate(70);
+}
+
+/* Libro gia' in catalogo -> scheda; altrimenti (bibliotecario) -> nuovo libro con i dati da internet. */
+function trovaIsbn(isbn) {
+  const l = S.stato.libri.find(x => normalizzaIsbn(x.isbn) === isbn);
+  if (l) return apriScheda(l.id);
+  if (bibliotecario()) return apriFormLibro({ isbn: isbn }, true);
+  apri('Non in biblioteca', `<p>Il libro con ISBN <b>${esc(isbn)}</b> non è nel catalogo della biblioteca.</p>`, '<button class="b primario" data-chiudi>Va bene</button>');
+}
+
+$('#form-isbn').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#isbn-manuale').value, isbn = normalizzaIsbn(v);
+  if (!isbn) { msgScanner('ISBN non valido: controlla le cifre (10 o 13, quello col 978 sotto il codice a barre).', 'avviso'); return; }
+  $('#isbn-manuale').value = ''; msgScanner('');
+  fermaCamera().then(() => trovaIsbn(isbn));
+});
+
+$('#foto').addEventListener('change', async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  await fermaCamera();
+  msgScanner('<span style="display:inline-flex;gap:8px;align-items:center"><span class="rotella"></span>Leggo il codice nella foto…</span>');
+  try {
+    const testo = await leggiFoto(file);
+    const isbn = normalizzaIsbn(testo);
+    if (!isbn) { msgScanner(`Ho letto ${esc(testo)}, ma non è un ISBN: fotografa il codice che inizia con 978 o 979.`, 'avviso'); return; }
+    msgScanner(''); segnale(); trovaIsbn(isbn);
+  } catch (err) {
+    msgScanner('Non trovo un codice a barre nella foto. Avvicinati, tieni il codice dritto e ben illuminato, oppure scrivi l\'ISBN.', 'avviso');
+  }
+});
+async function leggiFoto(file) {
+  const img = await createImageBitmap(file);
+  if ('BarcodeDetector' in window) {
+    try {
+      const r = await new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] }).detect(img);
+      if (r.length) return r[0].rawValue;
+    } catch (e) { /* si prova con la libreria */ }
+  }
+  if (!window.Html5Qrcode) throw new Error('libreria assente');
+  if (!scannerFile) scannerFile = new Html5Qrcode('file-scan', { formatsToSupport: formati(), verbose: false });
+  for (const [lato, gradi] of [[1600, 0], [1600, 90], [1000, 0], [2400, 0]]) {
+    try { return await scannerFile.scanFile(await ridimensiona(img, lato, gradi), false); } catch (e) { /* prossimo tentativo */ }
+  }
+  throw new Error('nessun codice');
+}
+async function ridimensiona(img, lato, gradi) {
+  const k = Math.min(1, lato / Math.max(img.width, img.height));
+  const w = Math.round(img.width * k), h = Math.round(img.height * k);
+  const c = document.createElement('canvas');
+  const ruota = gradi % 180 !== 0;
+  c.width = ruota ? h : w; c.height = ruota ? w : h;
+  const x = c.getContext('2d');
+  x.translate(c.width / 2, c.height / 2); x.rotate(gradi * Math.PI / 180); x.drawImage(img, -w / 2, -h / 2, w, h);
+  const blob = await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.92));
+  return new File([blob], 'codice.jpg', { type: 'image/jpeg' });
+}
+
+avvia();
+</script>
+</body>
+</html>

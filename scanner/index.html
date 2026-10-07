@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<!-- © 2026 Istituto Comprensivo di Almese (www.comprensivoalmese.it) – sviluppata dal Wolf Team.
+     Tutti i diritti riservati: nessun uso senza permesso scritto della scuola (vedi LICENZA.md) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#170d07">
+<title>Scanner della biblioteca</title>
+<link rel="icon" type="image/png" href="icona.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--legno:#2a1a10;--legno-scuro:#170d07;--oro:#d4af5a;--oro-chiaro:#f3dc9a;--carta:#ead7aa;--superficie:#f6ebcd;
+  --primario:#7b2331;--primario-testo:#f6e7c1;--testo:#2b1b10;--rosso:#f2cfc4;--ambra:#f3dca6;--verde:#dfe7c6}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--legno-scuro);color:var(--primario-testo);font:1.1rem "EB Garamond",Garamond,Georgia,serif}
+body{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;width:100%;max-width:560px;margin-bottom:12px}
+header img{width:44px;height:44px;border-radius:10px}
+h1{margin:0;font:600 1.15rem Cinzel,Georgia,serif;letter-spacing:.04em;color:var(--oro-chiaro)}
+h1 small{display:block;font:400 .85rem "EB Garamond",serif;letter-spacing:0;color:var(--carta);opacity:.8}
+main{width:100%;max-width:560px;display:flex;flex-direction:column;gap:12px}
+#lettore{width:100%;aspect-ratio:4/3;background:#000;border:2px solid var(--oro);border-radius:10px;overflow:hidden;position:relative}
+#lettore video{width:100%!important;height:100%!important;object-fit:cover}
+#riposo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--carta);cursor:pointer}
+.msg{padding:10px 14px;border-radius:6px;background:var(--ambra);color:var(--testo)}
+.msg.ok{background:var(--verde)}.msg.errore{background:var(--rosso)}
+.azioni{display:flex;gap:10px;flex-wrap:wrap}
+.b{font:600 1rem "EB Garamond",serif;padding:11px 18px;border-radius:6px;border:1px solid var(--oro);background:transparent;color:var(--oro-chiaro);cursor:pointer;text-decoration:none;display:inline-block}
+.b.primario{background:var(--primario);color:var(--primario-testo)}
+form{display:flex;gap:8px}
+input{flex:1;font:1.05rem "EB Garamond",serif;padding:10px 12px;border-radius:6px;border:1px solid var(--oro);background:var(--superficie);color:var(--testo)}
+.piccolo{font-size:.9rem;color:var(--carta);opacity:.8;margin:0}
+footer{margin-top:auto;padding-top:18px;font-size:.8rem;color:var(--carta);opacity:.65;text-align:center;max-width:560px}
+footer a{color:inherit}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <img src="icona.png" alt="">
+  <h1 id="titolo">Biblioteca<small>Scanner dal vivo</small></h1>
+</header>
+<main>
+  <div id="lettore"><div id="riposo">Sto aprendo la fotocamera…</div></div>
+  <div id="msg" class="msg" hidden></div>
+  <div class="azioni">
+    <button class="b primario" id="b-riavvia" hidden>Riprova</button>
+    <a class="b" id="b-torna" hidden>Torna alla biblioteca</a>
+  </div>
+  <form id="form-isbn">
+    <input id="isbn-manuale" inputmode="numeric" placeholder="…oppure scrivi l'ISBN" autocomplete="off">
+    <button class="b">Cerca</button>
+  </form>
+  <p class="piccolo">Inquadra il codice a barre sul retro del libro (quello che inizia con 978 o 979), da vicino e ben illuminato.
+    Appena viene letto torni automaticamente alla biblioteca.</p>
+</main>
+<footer>© 2026 Istituto Comprensivo di Almese (<a href="https://www.comprensivoalmese.it">www.comprensivoalmese.it</a>) – sviluppata dal Wolf Team.
+  Tutti i diritti riservati: il codice si può usare solo con il permesso scritto della scuola, che può concederlo in licenza a chi ne fa richiesta.</footer>
+
+<script>
+/* Pagina autonoma: sta fuori da Google, quindi puo' usare la fotocamera dal vivo (l'app dentro Apps Script no).
+   Si apre da "Fotocamera dal vivo" nell'app con ?r=<indirizzo dell'app>; appena legge un ISBN torna all'app
+   aggiungendo ?isbn=<codice>, e l'app apre la scheda del libro. */
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// Si torna solo a un indirizzo di Google Apps Script (niente redirect verso siti qualsiasi).
+function indirizzoApp(v) {
+  try { const u = new URL(v); return u.protocol === 'https:' && u.hostname === 'script.google.com' ? u.href : ''; } catch (e) { return ''; }
+}
+let ritorno = indirizzoApp(new URLSearchParams(location.search).get('r'));
+try { if (ritorno) sessionStorage.setItem('r', ritorno); else ritorno = indirizzoApp(sessionStorage.getItem('r')); } catch (e) { /* va bene lo stesso */ }
+const nomeBiblio = new URLSearchParams(location.search).get('n');
+if (nomeBiblio) { document.title = nomeBiblio + ' – scanner'; $('#titolo').firstChild.textContent = nomeBiblio.slice(0, 60); }
+if (ritorno) { $('#b-torna').href = ritorno; $('#b-torna').hidden = false; }
+
+function msg(testo, tipo) { const m = $('#msg'); m.hidden = !testo; m.className = 'msg' + (tipo ? ' ' + tipo : ''); m.innerHTML = testo || ''; }
+
+// ISBN-13 (978/979) o ISBN-10, con controllo delle cifre; restituisce l'ISBN-13 oppure ''.
+function normalizzaIsbn(t) {
+  const c = String(t || '').replace(/[\s-]/g, '').toUpperCase();
+  if (/^\d{13}$/.test(c) && /^97[89]/.test(c)) {
+    const s = [...c.slice(0, 12)].reduce((a, d, i) => a + d * (i % 2 ? 3 : 1), 0);
+    return (10 - s % 10) % 10 === +c[12] ? c : '';
+  }
+  if (/^\d{9}[\dX]$/.test(c)) {
+    const s = [...c.slice(0, 9)].reduce((a, d, i) => a + d * (10 - i), 0) + (c[9] === 'X' ? 10 : +c[9]);
+    if (s % 11) return '';
+    const b = '978' + c.slice(0, 9);
+    const k = [...b].reduce((a, d, i) => a + d * (i % 2 ? 3 : 1), 0);
+    return b + (10 - k % 10) % 10;
+  }
+  return '';
+}
+
+function segnale() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain();
+    o.frequency.value = 1320; g.gain.value = 0.08; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.12);
+  } catch (e) { /* senza audio va bene lo stesso */ }
+  if (navigator.vibrate) navigator.vibrate(70);
+}
+
+let scanner = null, trovato = false, ultimoNonIsbn = '';
+function trovatoIsbn(isbn) {
+  if (trovato) return;
+  trovato = true; segnale();
+  if (scanner) scanner.stop().catch(() => {});
+  if (!ritorno) { msg(`Letto l'ISBN <b>${esc(isbn)}</b>. Apri questa pagina dal pulsante dell'app per tornare alla biblioteca.`, 'ok'); return; }
+  msg(`Letto l'ISBN <b>${esc(isbn)}</b>: torno alla biblioteca…`, 'ok');
+  location.replace(ritorno + (ritorno.includes('?') ? '&' : '?') + 'isbn=' + isbn);
+}
+function codiceLetto(testo) {
+  const isbn = normalizzaIsbn(testo);
+  if (isbn) return trovatoIsbn(isbn);
+  if (testo !== ultimoNonIsbn) { ultimoNonIsbn = testo; msg(`Il codice ${esc(testo)} non è un ISBN: cerca quello che inizia con 978 o 979.`, ''); }
+}
+
+async function avvia() {
+  $('#b-riavvia').hidden = true; msg('');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    $('#riposo').textContent = 'Fotocamera non disponibile';
+    msg('Questo browser non permette la fotocamera dal vivo (serve una pagina https). Scrivi l\'ISBN qui sotto.', 'errore'); return;
+  }
+  if (!window.Html5Qrcode) { msg('Il lettore di codici non si è caricato: controlla la connessione e riprova.', 'errore'); $('#b-riavvia').hidden = false; return; }
+  const F = window.Html5QrcodeSupportedFormats;
+  try {
+    if (!scanner) scanner = new Html5Qrcode('lettore', { formatsToSupport: F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined, verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+    await scanner.start({ facingMode: 'environment' },
+      { fps: 12, qrbox: (w, h) => ({ width: Math.max(60, Math.floor(Math.min(w * 0.85, 380))), height: Math.max(60, Math.floor(Math.min(h * 0.45, 170))) }) },
+      codiceLetto, () => {});
+    const r = $('#riposo'); if (r) r.remove();
+  } catch (e) {
+    const negato = /NotAllowed|Permission/i.test(String(e && (e.name || e)));
+    $('#riposo') && ($('#riposo').textContent = 'Fotocamera ferma');
+    msg(negato ? 'Hai negato l\'uso della fotocamera. Consentila dal lucchetto accanto all\'indirizzo e premi Riprova.'
+               : 'Non riesco ad aprire la fotocamera: ' + esc((e && e.message) || e), 'errore');
+    $('#b-riavvia').hidden = false;
+  }
+}
+$('#b-riavvia').onclick = avvia;
+$('#form-isbn').addEventListener('submit', e => {
+  e.preventDefault();
+  const isbn = normalizzaIsbn($('#isbn-manuale').value);
+  if (!isbn) { msg('ISBN non valido: controlla le cifre (10 o 13, quello col 978 sotto il codice a barre).'); return; }
+  trovatoIsbn(isbn);
+});
+avvia();
+</script>
+</body>
+</html>
