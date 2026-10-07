@@ -658,11 +658,16 @@ async function cercaOnline(isbn) {
     json('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn),
     json('https://openlibrary.org/api/books?bibkeys=ISBN:' + isbn + '&format=json&jscmd=data')
   ])).map(x => (x.status === 'fulfilled' ? x.value : null));
-  if (!g && !o) {
+  // Google Libri senza chiave spesso risponde "quota esaurita" e Open Library non conosce molti libri italiani:
+  // se dal telefono non e' uscito un titolo si chiede al server, che interroga anche l'SBN (catalogo italiano).
+  let sbn = null;
+  const trovatoQui = !!((g && g.items && g.items[0]) || (o && o['ISBN:' + isbn]));
+  if (!trovatoQui) {
     try {
       const t = await chiama('cercaOnline', isbn);
-      g = t.google ? JSON.parse(t.google) : null;
-      o = t.openlibrary ? JSON.parse(t.openlibrary) : null;
+      g = (t.google && JSON.parse(t.google)) || g;
+      o = (t.openlibrary && JSON.parse(t.openlibrary)) || o;
+      sbn = t.sbn ? JSON.parse(t.sbn) : null;
     } catch (e) { /* niente rete: si compila a mano */ }
   }
   const r = { fonti: [] };
@@ -687,6 +692,16 @@ async function cercaOnline(isbn) {
     r.anno = r.anno || (String(ol.publish_date || '').match(/\d{4}/) || [''])[0];
     r.pagine = r.pagine || ol.number_of_pages || '';
     if (!r.copertina && ol.cover) r.copertina = ol.cover.medium || ol.cover.large || ol.cover.small || '';
+  }
+  const sr = sbn && sbn.briefRecords && sbn.briefRecords[0];
+  if (sr) {
+    r.fonti.push('SBN (catalogo italiano)');
+    const nome = n => { const p = String(n || '').split(','); return p.length === 2 ? p[1].trim() + ' ' + p[0].trim() : String(n || '').trim(); };
+    const pub = String(sr.pubblicazione || '');
+    r.titolo = r.titolo || String(sr.titolo || '').split(/\s+[:\/]\s+/)[0].trim();
+    r.autori = r.autori || nome(sr.autorePrincipale);
+    r.editore = r.editore || (pub.split(':')[1] || '').split(',')[0].trim();
+    r.anno = r.anno || (pub.match(/\d{4}/) || [''])[0];
   }
   r.trovato = !!(r.titolo);
   return r;
@@ -923,14 +938,15 @@ if (!dalVivo) modalitaFoto();
 /* Dentro Apps Script la fotocamera dal vivo e' bloccata: se nelle Impostazioni c'e' l'indirizzo della pagina
    docs/index.html (https, fuori da Google) il pulsante "Fotocamera dal vivo" la apre e, letto il codice,
    torna qui con ?isbn=... */
+let linkLive = '';
 function linkDalVivo() {
   const b = $('#btn-dal-vivo'), st = S.stato || {};
   const base = st.impostazioni && st.impostazioni.scanner, app = st.indirizzoApp;
-  if (dalVivo || !base || !app) { b.hidden = true; return; }
+  if (dalVivo || !base || !app) { b.hidden = true; linkLive = ''; return; }
   b.href = base + (base.includes('?') ? '&' : '?') + 'r=' + encodeURIComponent(app) + '&n=' + encodeURIComponent(st.impostazioni.nome || '');
-  b.hidden = false;
+  b.hidden = false; linkLive = b.href;
   const f = $('#btn-foto'); f.classList.remove('primario'); f.textContent = 'Scatta una foto del codice';
-  $('#riposo-testo').innerHTML = 'Tocca “Fotocamera dal vivo” per inquadrare il codice a barre<br><small style="opacity:.8">oppure fotografalo da vicino, dritto e ben illuminato</small>';
+  $('#riposo-testo').innerHTML = 'Tocca qui e inquadra il codice a barre<br><small style="opacity:.8">si apre la fotocamera dal vivo: niente foto da scattare</small>';
 }
 function isbnDaIndirizzo() {
   return new Promise(ok => {
@@ -940,7 +956,10 @@ function isbnDaIndirizzo() {
     ok('');
   });
 }
-$('#scanner-riposo').addEventListener('click', e => { if (dalVivo) { e.preventDefault(); avviaCamera(); } });
+$('#scanner-riposo').addEventListener('click', e => {
+  if (dalVivo) { e.preventDefault(); avviaCamera(); }
+  else if (linkLive) { e.preventDefault(); window.open(linkLive, '_top'); } // fotocamera dal vivo nella pagina scanner
+});
 
 function bottoneCamera() {
   $('#btn-camera').textContent = cameraAttiva ? 'Ferma fotocamera' : 'Avvia fotocamera';

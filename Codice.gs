@@ -259,7 +259,9 @@ function cercaOnline(isbn) {
   };
   return {
     google: prendi('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn),
-    openlibrary: prendi('https://openlibrary.org/api/books?bibkeys=ISBN:' + isbn + '&format=json&jscmd=data')
+    openlibrary: prendi('https://openlibrary.org/api/books?bibkeys=ISBN:' + isbn + '&format=json&jscmd=data'),
+    // Catalogo nazionale delle biblioteche italiane (SBN): conosce quasi tutti i libri italiani.
+    sbn: prendi('https://opac.sbn.it/opacmobilegw/search.json?isbn=' + isbn)
   };
 }
 

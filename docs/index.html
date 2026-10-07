@@ -49,6 +49,7 @@ footer a{color:inherit}
   <div id="msg" class="msg" hidden></div>
   <div class="azioni">
     <button class="b primario" id="b-riavvia" hidden>Riprova</button>
+    <a class="b primario" id="b-apri" hidden>Apri il libro</a>
     <a class="b" id="b-torna" hidden>Torna alla biblioteca</a>
   </div>
   <form id="form-isbn">
@@ -112,7 +113,9 @@ function trovatoIsbn(isbn) {
   if (scanner) scanner.stop().catch(() => {});
   if (!ritorno) { msg(`Letto l'ISBN <b>${esc(isbn)}</b>. Apri questa pagina dal pulsante dell'app per tornare alla biblioteca.`, 'ok'); return; }
   msg(`Letto l'ISBN <b>${esc(isbn)}</b>: torno alla biblioteca…`, 'ok');
-  location.replace(ritorno + (ritorno.includes('?') ? '&' : '?') + 'isbn=' + isbn);
+  const vai = ritorno + (ritorno.includes('?') ? '&' : '?') + 'isbn=' + isbn;
+  $('#b-apri').href = vai; $('#b-apri').hidden = false; // se il ritorno automatico non parte, basta toccare qui
+  location.replace(vai);
 }
 function codiceLetto(testo) {
   const isbn = normalizzaIsbn(testo);
