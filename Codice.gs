@@ -112,13 +112,22 @@ function preparaIcona_() {
 function carica(rileggiElenchi) {
   const utente = utente_();
   const prestiti = leggi_('Prestiti');
-  const fuori = {};
-  prestiti.forEach(p => { if (!p.restituitoIl) fuori[p.libroId] = (fuori[p.libroId] || 0) + 1; });
+  // Per il catalogo servono solo numeri, non nomi: copie fuori, quante volte e' stato letto, primo rientro previsto.
+  const fuori = {}, letture = {}, rientro = {};
+  prestiti.forEach(p => {
+    letture[p.libroId] = (letture[p.libroId] || 0) + 1;
+    if (p.restituitoIl) return;
+    fuori[p.libroId] = (fuori[p.libroId] || 0) + 1;
+    const s = String(p.scadenza || '');
+    if (s && (!rientro[p.libroId] || s < rientro[p.libroId])) rientro[p.libroId] = s;
+  });
   const libri = leggi_('Libri').map(l => {
     l.isbn = String(l.isbn);
     l.copie = Math.max(1, parseInt(l.copie, 10) || 1);
     l.inPrestito = fuori[l.id] || 0;
     l.disponibili = Math.max(0, l.copie - l.inPrestito);
+    l.letture = letture[l.id] || 0;
+    l.rientro = l.disponibili ? '' : (rientro[l.id] || '');
     return l;
   });
   let indirizzoApp = '';
