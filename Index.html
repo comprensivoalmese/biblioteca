@@ -926,6 +926,9 @@ function msgScanner(testo, tipo) {
 const politica = document.permissionsPolicy || document.featurePolicy;
 let dalVivo = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
   && !(politica && politica.allowsFeature && !politica.allowsFeature('camera'));
+let linkLive = '';
+/* Dentro Apps Script (cornice di Google) la fotocamera dal vivo non e' mai permessa. */
+const inAppsScript = !!(window.google && window.google.script && /googleusercontent\.com$/.test(location.hostname));
 function modalitaFoto() {
   dalVivo = false;
   $('#btn-camera').hidden = true;
@@ -933,12 +936,12 @@ function modalitaFoto() {
   b.classList.add('primario'); b.textContent = 'Fotografa il codice a barre';
   $('#riposo-testo').innerHTML = 'Tocca qui per fotografare il codice a barre<br><small style="opacity:.8">da vicino, dritto e ben illuminato</small>';
   $('#scanner-riposo').style.cursor = 'pointer';
+  if (S.stato) linkDalVivo(); // se c'e' la pagina scanner, il pulsante "Fotocamera dal vivo" prende il posto
 }
 if (!dalVivo) modalitaFoto();
 /* Dentro Apps Script la fotocamera dal vivo e' bloccata: se nelle Impostazioni c'e' l'indirizzo della pagina
    docs/index.html (https, fuori da Google) il pulsante "Fotocamera dal vivo" la apre e, letto il codice,
    torna qui con ?isbn=... */
-let linkLive = '';
 function linkDalVivo() {
   const b = $('#btn-dal-vivo'), st = S.stato || {};
   const base = st.impostazioni && st.impostazioni.scanner, app = st.indirizzoApp;
@@ -966,6 +969,7 @@ function bottoneCamera() {
   $('#scanner-riposo').hidden = cameraAttiva;
 }
 async function avviaCamera() {
+  if (dalVivo && inAppsScript && S.stato && S.stato.impostazioni.scanner) modalitaFoto(); // inutile provare qui: si usa la pagina scanner
   if (!dalVivo || cameraAttiva || avvioInCorso) return;
   if (!window.Html5Qrcode) { msgScanner('Il lettore di codici non si è caricato: controlla la connessione e ricarica la pagina.', 'errore'); return; }
   avvioInCorso = true;
@@ -981,7 +985,7 @@ async function avviaCamera() {
     cameraAttiva = false;
     modalitaFoto();
     const negato = /NotAllowed|Permission/i.test(String(e && (e.name || e)));
-    if (negato) msgScanner('La fotocamera dal vivo non è permessa qui: fotografa il codice, funziona lo stesso.', 'avviso');
+    if (negato && !linkLive) msgScanner('La fotocamera dal vivo non è permessa qui: fotografa il codice, funziona lo stesso.', 'avviso');
   }
   avvioInCorso = false;
   bottoneCamera();
