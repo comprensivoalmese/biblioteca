@@ -33,9 +33,16 @@ main{width:100%;max-width:560px;display:flex;flex-direction:column;gap:12px}
 form{display:flex;gap:8px}
 input{flex:1;font:1.05rem "EB Garamond",serif;padding:10px 12px;border-radius:6px;border:1px solid var(--oro);background:var(--superficie);color:var(--testo)}
 .piccolo{font-size:.9rem;color:var(--carta);opacity:.8;margin:0}
-footer{width:100%;margin-top:auto;padding-top:18px;font-size:.8rem;color:var(--carta);opacity:.65;text-align:center;max-width:560px}
-footer a{color:inherit}
-.credito{display:flex;gap:12px;align-items:center;text-align:left}.credito p{margin:0}.lupo-wt{flex:none;border-radius:8px}
+.colophon{width:100%;max-width:560px;margin-top:auto;padding:22px 4px 8px;text-align:center;color:var(--oro-chiaro)}
+.colophon .sigillo{display:flex;align-items:center;justify-content:center;gap:16px}
+.colophon .lupo-wt{width:60px;height:60px;flex:none;border-radius:15px;box-shadow:0 0 0 2px rgba(212,175,90,.55),0 6px 16px rgba(0,0,0,.45)}
+.colophon .firma{text-align:left}
+.colophon .firma b{display:block;font:600 1.1rem Cinzel,Georgia,serif;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin:1px 0}
+.colophon .firma span{display:block;font:italic 1rem "EB Garamond",serif;color:var(--carta);opacity:.9}
+.colophon .firma .pre{font-size:.9rem;opacity:.75}
+.colophon .filetto{height:1px;margin:14px auto 10px;max-width:300px;background:linear-gradient(90deg,transparent,#9c7a33,transparent)}
+.colophon .diritti{margin:0;font-size:.8rem;line-height:1.5;color:var(--carta);opacity:.7}
+.colophon a{color:inherit}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -59,8 +66,16 @@ footer a{color:inherit}
   <p class="piccolo">Inquadra il codice a barre sul retro del libro (quello che inizia con 978 o 979), da vicino e ben illuminato.
     Appena viene letto torni automaticamente alla biblioteca.</p>
 </main>
-<footer><div class="credito"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="44" height="44" class="lupo-wt" role="img" aria-label="Wolf Team"><defs><radialGradient id="wt-fondo" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#9a2f3f"/><stop offset=".55" stop-color="#6a1b27"/><stop offset="1" stop-color="#2a0c12"/></radialGradient><radialGradient id="wt-luce" cx="50%" cy="46%" r="40%"><stop offset="0" stop-color="#ffd98a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient><linearGradient id="wt-oro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe7ae"/><stop offset=".5" stop-color="#e2bd62"/><stop offset="1" stop-color="#b38a35"/></linearGradient><linearGradient id="wt-pelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf1d6"/><stop offset="1" stop-color="#e9d3a0"/></linearGradient></defs><rect width="512" height="512" fill="url(#wt-fondo)"/><rect x="22" y="22" width="468" height="468" rx="40" fill="none" stroke="url(#wt-oro)" stroke-width="6" opacity=".85"/><rect x="36" y="36" width="440" height="440" rx="30" fill="none" stroke="#e2bd62" stroke-width="2" opacity=".5"/><circle cx="256" cy="250" r="200" fill="url(#wt-luce)"/><!-- lupo del Wolf Team nei colori della biblioteca: oro e pergamena su fondo bordeaux --><g transform="translate(256 258) scale(.8) translate(-256 -258)"><polygon points="120.2,75.2 216.1,171.0 256.0,159.0 295.9,171.0 391.8,75.2 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 176.1,362.7 64.3,298.8 112.2,234.9" fill="url(#wt-pelo)"/><polygon points="256.0,159.0 295.9,171.0 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 256.0,270.8" fill="#d9bd7a" opacity=".85"/><polygon points="144.2,119.1 196.1,175.0 136.2,195.0" fill="#b38a35"/><polygon points="367.8,119.1 315.9,175.0 375.8,195.0" fill="#b38a35"/><polygon points="164.1,250.9 228.0,262.9 200.1,282.8" fill="#3a1408"/><polygon points="347.9,250.9 284.0,262.9 311.9,282.8" fill="#3a1408"/><polygon points="228.0,386.7 284.0,386.7 256.0,422.6" fill="#3a1408"/></g><g fill="url(#wt-oro)"><path d="M256 50l9 22 22 9-22 9-9 22-9-22-22-9 22-9z"/><path d="M96 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/><path d="M416 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/></g><path d="M176 440h160" stroke="url(#wt-oro)" stroke-width="5" stroke-linecap="round"/><circle cx="256" cy="440" r="9" fill="url(#wt-oro)"/></svg><p>© 2026 Istituto Comprensivo di Almese (<a href="https://www.comprensivoalmese.it">www.comprensivoalmese.it</a>) – sviluppata dal Wolf Team.
-  Tutti i diritti riservati: il codice si può usare solo con il permesso scritto della scuola, che può concederlo in licenza a chi ne fa richiesta.</p></div></footer>
+<footer class="colophon">
+  <div class="sigillo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="lupo-wt" role="img" aria-label="Wolf Team"><defs><radialGradient id="wt-fondo" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#9a2f3f"/><stop offset=".55" stop-color="#6a1b27"/><stop offset="1" stop-color="#2a0c12"/></radialGradient><radialGradient id="wt-luce" cx="50%" cy="46%" r="40%"><stop offset="0" stop-color="#ffd98a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient><linearGradient id="wt-oro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe7ae"/><stop offset=".5" stop-color="#e2bd62"/><stop offset="1" stop-color="#b38a35"/></linearGradient><linearGradient id="wt-pelo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf1d6"/><stop offset="1" stop-color="#e9d3a0"/></linearGradient></defs><rect width="512" height="512" fill="url(#wt-fondo)"/><rect x="22" y="22" width="468" height="468" rx="40" fill="none" stroke="url(#wt-oro)" stroke-width="6" opacity=".85"/><rect x="36" y="36" width="440" height="440" rx="30" fill="none" stroke="#e2bd62" stroke-width="2" opacity=".5"/><circle cx="256" cy="250" r="200" fill="url(#wt-luce)"/><!-- lupo del Wolf Team nei colori della biblioteca: oro e pergamena su fondo bordeaux --><g transform="translate(256 258) scale(.8) translate(-256 -258)"><polygon points="120.2,75.2 216.1,171.0 256.0,159.0 295.9,171.0 391.8,75.2 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 176.1,362.7 64.3,298.8 112.2,234.9" fill="url(#wt-pelo)"/><polygon points="256.0,159.0 295.9,171.0 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 256.0,270.8" fill="#d9bd7a" opacity=".85"/><polygon points="144.2,119.1 196.1,175.0 136.2,195.0" fill="#b38a35"/><polygon points="367.8,119.1 315.9,175.0 375.8,195.0" fill="#b38a35"/><polygon points="164.1,250.9 228.0,262.9 200.1,282.8" fill="#3a1408"/><polygon points="347.9,250.9 284.0,262.9 311.9,282.8" fill="#3a1408"/><polygon points="228.0,386.7 284.0,386.7 256.0,422.6" fill="#3a1408"/></g><g fill="url(#wt-oro)"><path d="M256 50l9 22 22 9-22 9-9 22-9-22-22-9 22-9z"/><path d="M96 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/><path d="M416 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/></g><path d="M176 440h160" stroke="url(#wt-oro)" stroke-width="5" stroke-linecap="round"/><circle cx="256" cy="440" r="9" fill="url(#wt-oro)"/></svg>
+    <div class="firma"><span class="pre">Sviluppata dal</span><b>Wolf Team</b><span>Istituto Comprensivo di Almese</span></div>
+  </div>
+  <div class="filetto"></div>
+  <p class="diritti">© 2026 Istituto Comprensivo di Almese (<a href="https://www.comprensivoalmese.it">www.comprensivoalmese.it</a>) · Tutti i diritti riservati<br>
+    Il codice si usa solo con il permesso scritto della scuola, che può concederlo in licenza a chi ne fa richiesta ·
+    <a href="https://github.com/comprensivoalmese/biblioteca/blob/main/LICENZA.md" style="white-space:nowrap">condizioni d'uso</a></p>
+</footer>
 
 <script>
 /* Pagina autonoma: sta fuori da Google, quindi puo' usare la fotocamera dal vivo (l'app dentro Apps Script no).
@@ -134,8 +149,9 @@ async function avvia() {
   try {
     if (!scanner) scanner = new Html5Qrcode('lettore', { formatsToSupport: F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined, verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
     // Alta risoluzione e inquadratura larga: i codici a barre piccoli o lontani si leggono molto meglio.
-    await scanner.start({ facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-      { fps: 10, qrbox: (w, h) => ({ width: Math.floor(w * 0.92), height: Math.floor(Math.min(h * 0.7, w * 0.5)) }) },
+    await scanner.start({ facingMode: 'environment' },
+      { fps: 10, videoConstraints: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+        qrbox: (w, h) => ({ width: Math.floor(w * 0.92), height: Math.floor(Math.min(h * 0.7, w * 0.5)) }) },
       codiceLetto, () => {});
     try { // messa a fuoco continua, dove la fotocamera la offre
       await scanner.applyVideoConstraints({ advanced: [{ focusMode: 'continuous' }] });
