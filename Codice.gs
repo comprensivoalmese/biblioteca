@@ -11,6 +11,9 @@ const CARTELLA_ID = '1W0oK_XPOAO4Rf27_qH2vqB-MXt09oCq6';
 const NOME_DB = 'Biblioteca - Database';
 // Sottocartella con gli elenchi degli alunni (Fogli Google): servono a scegliere chi prende un libro.
 const NOME_CARTELLA_ELENCHI = 'ELENCHI';
+// Pagina con la fotocamera dal vivo (cartella docs/ del repo, pubblicata con GitHub Pages).
+// Si puo' cambiare nel foglio Impostazioni, riga "Indirizzo scanner" (vuota = questo indirizzo).
+const SCANNER_PREDEFINITO = 'https://comprensivoalmese.github.io/biblioteca/';
 
 // [chiave usata dall'app, intestazione nel Foglio]. L'ordine e' quello delle colonne.
 const COLONNE = {
@@ -359,7 +362,7 @@ function impostazioni_() {
     libriPerAlunno: isNaN(libri) ? 2 : libri, // 0 = nessun limite
     bloccaRitardi: si(mappa['blocca chi ha ritardi'], true),
     soloElenchi: si(mappa['solo alunni degli elenchi'], true),
-    scanner: String(mappa['indirizzo scanner'] || '').trim()
+    scanner: String(mappa['indirizzo scanner'] || SCANNER_PREDEFINITO).trim()
   };
 }
 

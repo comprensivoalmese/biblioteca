@@ -101,9 +101,9 @@ appena legge un ISBN valido torni all'app, che apre la scheda del libro (o "Nuov
 1. Pubblica la cartella `docs/` su un indirizzo **https** (la fotocamera lo richiede), per esempio con GitHub Pages
    (Settings → Pages → cartella `/docs`, se il piano dell'organizzazione lo consente per i repo privati) o su
    qualsiasi sito della scuola. Il file `icona.png` deve restare accanto a `index.html`.
-2. Nel foglio **Impostazioni** del database scrivi l'indirizzo nella riga **Indirizzo scanner**
-   (per esempio `https://comprensivoalmese.github.io/biblioteca/`). Se la riga non c'è, aggiorna il codice e riapri
-   l'app: la crea da sola.
+2. L'indirizzo predefinito è `https://comprensivoalmese.github.io/biblioteca/` (costante `SCANNER_PREDEFINITO` in
+   `Codice.gs`). Per usarne un altro scrivilo nel foglio **Impostazioni**, riga **Indirizzo scanner**
+   (la riga compare da sola dopo l'aggiornamento del codice).
 3. Aggiorna il deployment (nuova versione). Fatto: nella scheda Scansiona compare **Fotocamera dal vivo**.
 
 La pagina scanner torna solo a indirizzi `https://script.google.com/…`, non a siti qualsiasi, e non invia i dati
