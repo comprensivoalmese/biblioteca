@@ -14,4 +14,9 @@ Start-Process $edge -ArgumentList @('--headless=new', '--disable-gpu', "--user-d
 $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($png))
 $gs = "// Generato da icona\crea-icona.ps1: icona dell'app (PNG 512 px). Non modificare a mano.`nconst ICONA_PNG_BASE64 = '$b64';`n"
 [IO.File]::WriteAllText((Join-Path $radice 'Icona.gs'), $gs, (New-Object Text.UTF8Encoding $false))
+# Lupo del Wolf Team nei colori della biblioteca (accanto al credito, non e' l'icona dell'app)
+$svgW = [IO.File]::ReadAllText((Join-Path $qui 'wolf-team.svg')) -replace 'viewBox="0 0 512 512" width="512" height="512"', 'viewBox="0 0 512 512" width="128" height="128"'
+[IO.File]::WriteAllText((Join-Path $tmp 'wolf.html'), "<!doctype html><html><body style='margin:0;overflow:hidden;background:#000'>$svgW</body></html>")
+Start-Process $edge -ArgumentList @('--headless=new', '--disable-gpu', "--user-data-dir=$tmp\profilo", '--window-size=128,128',
+  '--hide-scrollbars', '--default-background-color=00000000', "--screenshot=$(Join-Path $qui 'wolf-team.png')", "file:///$($tmp -replace '\\','/')/wolf.html") -Wait
 Write-Output "icona.png: $((Get-Item $png).Length) byte, Icona.gs: $($gs.Length) caratteri"

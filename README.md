@@ -2,7 +2,7 @@
 
 <img src="icona/icona.png" alt="Icona Biblioteca" width="96" align="right">
 
-© 2026 Istituto Comprensivo di Almese ([www.comprensivoalmese.it](https://www.comprensivoalmese.it)) – sviluppata dal **Wolf Team**.
+© 2026 Istituto Comprensivo di Almese ([www.comprensivoalmese.it](https://www.comprensivoalmese.it)) – sviluppata dal **Wolf Team** <img src="icona/wolf-team.png" alt="Wolf Team" width="28" valign="middle">.
 **Tutti i diritti riservati**: il codice, anche in parte, si può usare solo con il permesso scritto della scuola,
 che può concederlo in licenza a chi ne fa richiesta. Dettagli in [LICENZA.md](LICENZA.md).
 

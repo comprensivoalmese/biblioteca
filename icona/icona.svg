@@ -14,7 +14,7 @@
       <stop offset=".5" stop-color="#e2bd62"/>
       <stop offset="1" stop-color="#b38a35"/>
     </linearGradient>
-    <linearGradient id="pelo" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="pagine" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fbf1d6"/>
       <stop offset="1" stop-color="#e9d3a0"/>
     </linearGradient>
@@ -23,22 +23,27 @@
   <rect x="22" y="22" width="468" height="468" rx="40" fill="none" stroke="url(#oro)" stroke-width="6" opacity=".85"/>
   <rect x="36" y="36" width="440" height="440" rx="30" fill="none" stroke="#e2bd62" stroke-width="2" opacity=".5"/>
   <circle cx="256" cy="250" r="200" fill="url(#luce)"/>
-  <title>Biblioteca - Wolf Team, Istituto Comprensivo di Almese</title>
-  <!-- lupo del Wolf Team nei colori della biblioteca: oro e pergamena su fondo bordeaux -->
-  <g transform="translate(256 258) scale(.8) translate(-256 -258)">
-    <polygon points="120.2,75.2 216.1,171.0 256.0,159.0 295.9,171.0 391.8,75.2 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 176.1,362.7 64.3,298.8 112.2,234.9" fill="url(#pelo)"/>
-    <polygon points="256.0,159.0 295.9,171.0 399.8,234.9 447.7,298.8 335.9,362.7 256.0,442.6 256.0,270.8" fill="#d9bd7a" opacity=".85"/>
-    <polygon points="144.2,119.1 196.1,175.0 136.2,195.0" fill="#b38a35"/>
-    <polygon points="367.8,119.1 315.9,175.0 375.8,195.0" fill="#b38a35"/>
-    <polygon points="164.1,250.9 228.0,262.9 200.1,282.8" fill="#3a1408"/>
-    <polygon points="347.9,250.9 284.0,262.9 311.9,282.8" fill="#3a1408"/>
-    <polygon points="228.0,386.7 284.0,386.7 256.0,422.6" fill="#3a1408"/>
+  <!-- libro aperto -->
+  <path d="M256 388c-40-26-92-34-150-30V170c58-6 110 4 150 32 40-28 92-38 150-32v188c-58-4-110 4-150 30z" fill="#3a1408" opacity=".35" transform="translate(0 10)"/>
+  <path d="M256 380c-40-26-92-34-150-30V162c58-6 110 4 150 32z" fill="url(#pagine)" stroke="url(#oro)" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M256 380c40-26 92-34 150-30V162c-58-6-110 4-150 32z" fill="url(#pagine)" stroke="url(#oro)" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M256 194v186" stroke="#b38a35" stroke-width="6"/>
+  <g fill="none" stroke="#c9a96b" stroke-width="5" stroke-linecap="round" opacity=".8">
+    <path d="M134 214c32-3 62 3 90 16M134 246c32-3 62 3 90 16M134 278c32-3 62 3 90 16M134 310c32-3 62 3 90 16"/>
+    <path d="M378 214c-32-3-62 3-90 16M378 246c-32-3-62 3-90 16M378 278c-32-3-62 3-90 16M378 310c-32-3-62 3-90 16"/>
   </g>
+  <!-- stelline -->
   <g fill="url(#oro)">
-    <path d="M256 50l9 22 22 9-22 9-9 22-9-22-22-9 22-9z"/>
-    <path d="M96 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/>
-    <path d="M416 96l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/>
+    <path d="M256 52l12 30 30 12-30 12-12 30-12-30-30-12 30-12z"/>
+    <path d="M358 92l7 17 17 7-17 7-7 17-7-17-17-7 17-7z"/>
+    <path d="M152 100l6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/>
+    <path d="M410 150l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"/>
   </g>
-  <path d="M176 440h160" stroke="url(#oro)" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="256" cy="440" r="9" fill="url(#oro)"/>
+  <circle cx="110" cy="150" r="5" fill="#fbe7ae"/>
+  <circle cx="300" cy="140" r="4" fill="#fbe7ae"/>
+  <circle cx="420" cy="230" r="4" fill="#fbe7ae" opacity=".8"/>
+  <circle cx="92" cy="240" r="3.5" fill="#fbe7ae" opacity=".8"/>
+  <!-- ex libris -->
+  <path d="M176 430h160" stroke="url(#oro)" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="256" cy="430" r="9" fill="url(#oro)"/>
 </svg>
