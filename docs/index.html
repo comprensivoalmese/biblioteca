@@ -125,7 +125,8 @@ let scanner = null, trovato = false, ultimoNonIsbn = '';
 function trovatoIsbn(isbn) {
   if (trovato) return;
   trovato = true; segnale();
-  if (scanner) scanner.stop().catch(() => {});
+  // stop() va in errore subito se la fotocamera non e' mai partita (permesso negato): non deve bloccare il ritorno
+  try { if (scanner && scanner.isScanning) scanner.stop().catch(() => {}); } catch (e) { /* gia' ferma */ }
   if (!ritorno) { msg(`Letto l'ISBN <b>${esc(isbn)}</b>. Apri questa pagina dal pulsante dell'app per tornare alla biblioteca.`, 'ok'); return; }
   msg(`Letto l'ISBN <b>${esc(isbn)}</b>: torno alla biblioteca…`, 'ok');
   const vai = ritorno + (ritorno.includes('?') ? '&' : '?') + 'isbn=' + isbn;

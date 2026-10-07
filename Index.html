@@ -975,6 +975,8 @@ function isbnDaIndirizzo() {
     ok('');
   });
 }
+// Il pulsante apre lo scanner come l'area di scansione (il solo link con target _top non sempre parte dalla cornice di Google).
+$('#btn-dal-vivo').addEventListener('click', e => { if (linkLive) { e.preventDefault(); window.open(linkLive, '_top'); } });
 $('#scanner-riposo').addEventListener('click', e => {
   if (dalVivo) { e.preventDefault(); avviaCamera(); }
   else if (linkLive) { e.preventDefault(); window.open(linkLive, '_top'); } // fotocamera dal vivo nella pagina scanner
