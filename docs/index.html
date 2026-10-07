@@ -117,7 +117,7 @@ function trovatoIsbn(isbn) {
 function codiceLetto(testo) {
   const isbn = normalizzaIsbn(testo);
   if (isbn) return trovatoIsbn(isbn);
-  if (testo !== ultimoNonIsbn) { ultimoNonIsbn = testo; msg(`Il codice ${esc(testo)} non è un ISBN: cerca quello che inizia con 978 o 979.`, ''); }
+  if (testo !== ultimoNonIsbn) { ultimoNonIsbn = testo; msg(`Ho letto <b>${esc(testo)}</b> ma non è un ISBN valido: cerca il codice che inizia con 978 o 979, di solito sul retro in basso.`, ''); }
 }
 
 async function avvia() {
@@ -130,9 +130,13 @@ async function avvia() {
   const F = window.Html5QrcodeSupportedFormats;
   try {
     if (!scanner) scanner = new Html5Qrcode('lettore', { formatsToSupport: F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined, verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
-    await scanner.start({ facingMode: 'environment' },
-      { fps: 12, qrbox: (w, h) => ({ width: Math.max(60, Math.floor(Math.min(w * 0.85, 380))), height: Math.max(60, Math.floor(Math.min(h * 0.45, 170))) }) },
+    // Alta risoluzione e inquadratura larga: i codici a barre piccoli o lontani si leggono molto meglio.
+    await scanner.start({ facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+      { fps: 10, qrbox: (w, h) => ({ width: Math.floor(w * 0.92), height: Math.floor(Math.min(h * 0.7, w * 0.5)) }) },
       codiceLetto, () => {});
+    try { // messa a fuoco continua, dove la fotocamera la offre
+      await scanner.applyVideoConstraints({ advanced: [{ focusMode: 'continuous' }] });
+    } catch (e) { /* non supportata: va bene lo stesso */ }
     const r = $('#riposo'); if (r) r.remove();
   } catch (e) {
     const negato = /NotAllowed|Permission/i.test(String(e && (e.name || e)));
