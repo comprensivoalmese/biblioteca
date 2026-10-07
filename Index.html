@@ -48,6 +48,8 @@ body:not(.biblio) .solo-biblio{display:none!important}
 .testata h1{font:700 1.45rem/1.1 var(--titoli);margin:0;letter-spacing:.04em;color:var(--oro-chiaro);
   text-shadow:0 0 12px rgba(255,200,110,.45),0 2px 0 #000;animation:candela 5s ease-in-out infinite}
 @keyframes candela{0%,100%{text-shadow:0 0 12px rgba(255,200,110,.45),0 2px 0 #000}45%{text-shadow:0 0 18px rgba(255,200,110,.65),0 2px 0 #000}55%{text-shadow:0 0 9px rgba(255,200,110,.35),0 2px 0 #000}}
+.motto{color:var(--carta);font:italic 1rem/1.25 var(--serif);letter-spacing:.02em;margin:2px 0 1px}
+.motto:empty{display:none}
 .sottotitolo{color:#cdb17a;font-style:italic;font-size:.95rem}
 .sottotitolo::before{content:"✦ ";color:var(--oro);font-style:normal}
 .scaffale{height:38px;max-width:1100px;margin:0 auto;position:relative;
@@ -311,6 +313,7 @@ dialog::backdrop{background:rgba(12,6,2,.72);backdrop-filter:blur(2px)}
   </div>
   <div>
     <h1 id="nome-biblioteca">Biblioteca</h1>
+    <div id="motto" class="motto"></div>
     <div id="chi" class="sottotitolo"></div>
   </div>
 </header>
@@ -508,8 +511,10 @@ async function avvia() {
 function disegna() {
   const st = S.stato;
   document.body.classList.toggle('biblio', bibliotecario());
-  $('#nome-biblioteca').textContent = st.impostazioni.nome;
-  document.title = st.impostazioni.nome;
+  const imp = st.impostazioni;
+  $('#nome-biblioteca').textContent = imp.titolo || imp.nome;
+  $('#motto').textContent = imp.titolo ? imp.nome : ''; // es. "Biblioteca I.C. Almese" sotto "Lupus in Libris"
+  document.title = imp.titolo ? imp.titolo + ' – ' + imp.nome : imp.nome;
   $('#chi').textContent = (st.utente.nome || 'ospite') + (bibliotecario() ? ' · bibliotecario' : ' · consultazione');
   riempiFiltri();
   disegnaCatalogo();
@@ -1103,7 +1108,7 @@ function linkDalVivo() {
   const b = $('#btn-dal-vivo'), st = S.stato || {};
   const base = st.impostazioni && st.impostazioni.scanner, app = st.indirizzoApp;
   if (dalVivo || !base || !app) { b.hidden = true; linkLive = ''; return; }
-  b.href = base + (base.includes('?') ? '&' : '?') + 'r=' + encodeURIComponent(app) + '&n=' + encodeURIComponent(st.impostazioni.nome || '');
+  b.href = base + (base.includes('?') ? '&' : '?') + 'r=' + encodeURIComponent(app) + '&n=' + encodeURIComponent(st.impostazioni.titolo || st.impostazioni.nome || '');
   b.hidden = false; linkLive = b.href;
   const f = $('#btn-foto'); f.classList.remove('primario'); f.textContent = 'Scatta una foto del codice';
   $('#riposo-testo').innerHTML = 'Tocca qui e inquadra il codice a barre<br><small style="opacity:.8">si apre la fotocamera dal vivo: niente foto da scattare</small>';

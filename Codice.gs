@@ -32,6 +32,8 @@ const COLONNE = {
 const COLONNE_TESTO = { Libri: ['isbn', 'inseritoIl'], Prestiti: ['isbn', 'prestatoIl', 'scadenza', 'restituitoIl'] };
 
 const IMPOSTAZIONI_INIZIALI = [
+  // Titolo grande dell'app; il nome della biblioteca compare sotto, come spiegazione.
+  ['Titolo', 'Lupus in Libris'],
   ['Nome biblioteca', 'Biblioteca I.C. Almese'],
   ['Giorni di prestito', 30],
   ['Generi', 'Narrativa, Fiabe e favole, Avventura, Gialli, Fantasy, Fantascienza, Umorismo, Fumetti, Poesia, ' +
@@ -50,7 +52,10 @@ const IMPOSTAZIONI_INIZIALI = [
 
 function doGet() {
   let titolo = 'Biblioteca';
-  try { titolo = impostazioni_().nome || titolo; } catch (e) { /* database non ancora pronto */ }
+  try {
+    const imp = impostazioni_();
+    titolo = imp.titolo ? imp.titolo + ' – ' + imp.nome : imp.nome;
+  } catch (e) { /* database non ancora pronto */ }
   const pagina = HtmlService.createHtmlOutputFromFile('Index')
     .setTitle(titolo) // e' il nome che compare sulla scheda del browser
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
@@ -371,6 +376,7 @@ function impostazioni_() {
   const si = (v, predefinito) => (v === undefined || v === '' ? predefinito : /^(s|y|v|1)/i.test(String(v).trim()));
   const libri = parseInt(mappa['libri per alunno'], 10);
   return {
+    titolo: String(mappa['titolo'] || 'Lupus in Libris'),
     nome: String(mappa['nome biblioteca'] || 'Biblioteca'),
     giorniPrestito: parseInt(mappa['giorni di prestito'], 10) || 30,
     generi: elenco(mappa['generi']),
