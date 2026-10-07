@@ -399,7 +399,7 @@ function impostazioni_() {
 function alunni_(rileggi) {
   const cache = CacheService.getScriptCache();
   if (!rileggi) {
-    const c = cache.get('alunni');
+    const c = cache.get('alunni-v2');
     if (c) return JSON.parse(c);
   }
   const elenco = [];
@@ -419,7 +419,7 @@ function alunni_(rileggi) {
   const visti = {};
   const unici = elenco.filter(a => { const k = a.n + '|' + a.c; if (visti[k]) return false; visti[k] = true; return true; })
     .sort((a, b) => a.n.localeCompare(b.n, 'it'));
-  try { cache.put('alunni', JSON.stringify(unici), 1800); } catch (e) { /* elenco troppo grande per la cache */ }
+  try { cache.put('alunni-v2', JSON.stringify(unici), 1800); } catch (e) { /* elenco troppo grande per la cache */ }
   return unici;
 }
 
@@ -446,7 +446,8 @@ function leggiElenco_(valori, nomeScheda) {
     cNome = t.findIndex(x => /^nome$|^nome\s*alunn/.test(x));
     // solo celle brevi: "Elenco alunni a.s. 2026/27" e' un titolo, non un'intestazione
     cAlunno = t.findIndex(x => x.length <= 25 && /^(alunn|student|nominativo|cognome\s*e\s*nome)/.test(x));
-    cClasse = t.findIndex(x => /^classe|^anno\s*di\s*corso/.test(x));
+    // "Classe", "Anno di corso" oppure le abbreviazioni CL / CL. / CLS / ANNO
+    cClasse = t.findIndex(x => /^classe|^anno\s*di\s*corso|^(cl\.?|cls|anno)$/.test(x));
     cSezione = t.findIndex(x => /^sez/.test(x));
     if (cCognome >= 0 || cAlunno >= 0) h = r;
   }
@@ -461,7 +462,9 @@ function leggiElenco_(valori, nomeScheda) {
     const romani = { I: '1', II: '2', III: '3', IV: '4', V: '5' };
     let anno = cClasse >= 0 ? String(v[cClasse] || '').trim().toUpperCase() : '';
     anno = anno.replace(/^(I{1,3}|IV|V)(?![A-Z])/, r => romani[r]);
-    let classe = anno + (cSezione >= 0 ? String(v[cSezione] || '') : '');
+    // Classe e sezione in colonne separate (2 + D) diventano "2D"; se la classe contiene gia' la sezione non si ripete.
+    const sez = cSezione >= 0 ? String(v[cSezione] || '').trim().toUpperCase() : '';
+    let classe = sez && anno.replace(/\s+/g, '').endsWith(sez) ? anno : anno + sez;
     classe = classe.replace(/[\s^°ª.\-]/g, '').toUpperCase() || classeScheda;
     out.push({ n: nome, c: classe });
   }

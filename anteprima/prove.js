@@ -17,6 +17,10 @@
     vero(a.some(x => x.n === 'Bianchi Marta' && x.c === '2A'), JSON.stringify(a[0]));
     vero(a.some(x => x.n === 'Verdi Giorgio' && x.c === '2A'), 'classe in numeri romani non convertita');
   });
+  prova('elenchi con intestazioni CL e SEZ (classe e sezione separate)', () => {
+    const a = leggiElenco_([['COGNOME', 'NOME', 'CL', 'SEZ'], ['Neri', 'Ada', '2', 'D'], ['Blu', 'Ugo', '3D', 'D'], ['Gialli', 'Ivo', 'II', 'b']], 'Foglio1');
+    vero(a.length === 3 && a[0].c === '2D' && a[1].c === '3D' && a[2].c === '2B', JSON.stringify(a));
+  });
   prova('nome invertito riconosciuto e normalizzato', () => {
     const p = st().prestiti.find(x => x.titolo === 'Draghi di montagna');
     vero(p.lettore === 'Bianchi Marta' && p.classe === '2A', p.lettore + ' ' + p.classe);

@@ -398,7 +398,8 @@ dialog::backdrop{background:rgba(12,6,2,.72);backdrop-filter:blur(2px)}
       <button data-f="ritardo">In ritardo</button>
       <button data-f="chiusi">Restituiti</button>
     </div>
-    <div class="barra-ricerca"><input id="cerca-prestiti" type="search" placeholder="Cerca lettore, classe, titolo…" autocomplete="off"></div>
+    <div class="barra-ricerca"><input id="cerca-prestiti" type="search" placeholder="Cerca lettore, classe, titolo…" autocomplete="off">
+      <button class="b primario" id="btn-nuovo-prestito" title="Presta un libro senza scansione">+ Nuovo prestito</button></div>
     <div id="lista-prestiti" class="elenco"></div>
   </section>
 
@@ -888,7 +889,36 @@ function situazioneLettore(nome, esterno) {
   return { attivi, ritardi, problemi };
 }
 
-function apriFormPrestito(l) {
+
+/* Nuovo prestito senza scansione: si sceglie il libro dal catalogo, poi il ragazzo dagli elenchi. */
+function sceltaLibroPrestito() {
+  apri('Nuovo prestito', `
+    <p class="piccolo" style="margin-top:0">Scegli il libro da prestare (oppure usa <b>Scansiona</b> per leggere il codice a barre).</p>
+    <input id="np-cerca" type="search" placeholder="Cerca titolo, autore, ISBN, scaffale…" autocomplete="off" style="margin-bottom:10px">
+    <div id="np-libri" class="proposte" style="max-height:52vh;margin:0"></div>`,
+    '<button class="b" data-chiudi>Annulla</button>');
+  const disegnaScelta = () => {
+    const parole = semplice($('#np-cerca').value).split(/\s+/).filter(Boolean);
+    const lista = S.stato.libri.filter(l => {
+      const t = semplice([l.titolo, l.autori, l.isbn, l.collocazione, l.genere].join(' '));
+      return parole.every(p => t.includes(p));
+    }).sort((a, b) => (b.disponibili > 0) - (a.disponibili > 0) || semplice(a.titolo).localeCompare(semplice(b.titolo), 'it')).slice(0, 80);
+    $('#np-libri').innerHTML = lista.length ? lista.map(l => `
+      <button type="button" data-id="${esc(l.id)}"${l.disponibili < 1 ? ' disabled style="opacity:.55"' : ''}>
+        <b>${esc(l.titolo)}<small style="display:block;font-weight:400;font-style:italic;color:var(--tenue)">${esc(l.autori || '')}</small></b>
+        <span>${l.disponibili < 1 ? 'in prestito' : l.copie > 1 ? l.disponibili + ' su ' + l.copie : 'disponibile'}</span>
+      </button>`).join('') : '<div class="piccolo" style="padding:6px 2px">Nessun libro trovato.</div>';
+  };
+  $('#np-cerca').addEventListener('input', disegnaScelta);
+  $('#np-libri').onclick = e => {
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    apriFormPrestito(S.stato.libri.find(l => l.id === b.dataset.id), true);
+  };
+  disegnaScelta();
+  $('#np-cerca').focus();
+}
+
+function apriFormPrestito(l, dalRegistro) {
   const imp = S.stato.impostazioni, alunni = S.stato.alunni || [];
   const passati = S.stato.prestiti || [];
   // Chi non e' negli elenchi ma ha gia' preso libri (docenti, personale)
@@ -902,7 +932,10 @@ function apriFormPrestito(l) {
   apri('Presta il libro', `
     <p style="margin-top:0"><b>${esc(l.titolo)}</b><br><span class="piccolo">${esc(l.autori)}</span></p>
     <form id="form-prestito" autocomplete="off">
-      <label class="campo">Chi lo prende *<input name="lettore" required placeholder="Scrivi cognome o nome, oppure la classe (es. 2B)"></label>
+      <div class="griglia2">
+        <label class="campo">Scegli la classe<select id="p-classi"><option value="">— tutte —</option>${classiElenchi(alunni).map(c => `<option>${esc(c)}</option>`).join('')}</select></label>
+        <label class="campo">Chi lo prende *<input name="lettore" required placeholder="Cognome o nome, oppure la classe (es. 2B)"></label>
+      </div>
       <div id="proposte" class="proposte"></div>
       <div id="situazione"></div>
       <div class="griglia2">
@@ -917,14 +950,16 @@ function apriFormPrestito(l) {
   const form = $('#form-prestito');
   const scelto = { alunno: null };
 
+  // Elenco dei nomi da toccare: per ricerca (2+ lettere) oppure tutta la classe scelta dal menu.
   const mostraProposte = () => {
     const q = semplice(form.lettore.value).trim();
     const box = $('#proposte');
-    if (q.length < 2 || scelto.alunno) { box.innerHTML = ''; return; }
-    const pezzi = q.split(/\s+/);
+    const cl = $('#p-classi').value;
+    if (scelto.alunno || (q.length < 2 && !cl)) { box.innerHTML = ''; return; }
+    const pezzi = q.split(/\s+/).filter(Boolean);
     const classe = q.replace(/\s+/g, '').toUpperCase();
-    const trovati = alunni.concat(esterniNoti).filter(a => a.c === classe
-      || pezzi.every(p => semplice(a.n).split(/\s+/).some(w => w.startsWith(p)))).slice(0, 40);
+    const trovati = alunni.concat(esterniNoti).filter(a => (!cl || a.c === cl) && (!pezzi.length || a.c === classe
+      || pezzi.every(p => semplice(a.n).split(/\s+/).some(w => w.startsWith(p))))).slice(0, cl ? 60 : 40);
     box.innerHTML = trovati.length
       ? trovati.map((a, i) => `<button type="button" data-i="${i}"><b>${esc(a.n)}</b><span>${esc(a.c)}${a.esterno ? ' · non in elenco' : ''}</span></button>`).join('')
       : alunni.length ? '<div class="piccolo" style="padding:6px 2px">Nessun alunno con questo nome negli elenchi.</div>' : '';
@@ -958,20 +993,28 @@ function apriFormPrestito(l) {
     $('#p-ok').disabled = problemi.length > 0;
   };
   form.lettore.addEventListener('input', () => { scelto.alunno = null; mostraProposte(); aggiornaSituazione(); });
+  $('#p-classi').addEventListener('change', () => { scelto.alunno = null; form.lettore.value = ''; form.classe.value = $('#p-classi').value; mostraProposte(); aggiornaSituazione(); });
   form.classe.addEventListener('input', aggiornaSituazione);
   form.esterno.addEventListener('change', aggiornaSituazione);
   form.lettore.focus();
-  $('#p-annulla').onclick = () => apriScheda(l.id);
+  $('#p-annulla').onclick = () => (dalRegistro ? sceltaLibroPrestito() : apriScheda(l.id));
   const invia = async () => {
     if (!form.lettore.value.trim()) { form.lettore.focus(); avviso('Scrivi chi prende il libro', true); return; }
     if ($('#p-ok').disabled) return;
     const d = Object.fromEntries(new FormData(form)); d.libroId = l.id; d.esterno = form.esterno.checked;
     $('#p-ok').disabled = true;
-    if (await azione('presta', d)) { avviso('Prestito registrato'); apriScheda(l.id); }
+    if (await azione('presta', d)) {
+      avviso('Prestito registrato');
+      if (dalRegistro) { fin.close(); vai('prestiti'); } else apriScheda(l.id);
+    }
     else $('#p-ok').disabled = false;
   };
   $('#p-ok').onclick = invia;
   form.addEventListener('submit', e => { e.preventDefault(); invia(); });
+}
+
+function classiElenchi(alunni) {
+  return Array.from(new Set(alunni.map(a => a.c).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
 }
 
 function rigaPrestito(p, oggi, compatta) {
@@ -1031,6 +1074,7 @@ $('#seg-prestiti').addEventListener('click', e => {
   disegnaPrestiti();
 });
 $('#cerca-prestiti').addEventListener('input', disegnaPrestiti);
+$('#btn-nuovo-prestito').addEventListener('click', sceltaLibroPrestito);
 
 /* ---------------------------------------------------------------- info */
 function disegnaInfo() {
@@ -1062,7 +1106,7 @@ function disegnaInfo() {
       <h2>Come si usa</h2>
       <p><b>Cercare un libro:</b> scrivi nella ricerca del Catalogo, oppure inquadra il codice a barre in Scansiona.</p>
       ${bibliotecario() ? `<p><b>Aggiungere un libro:</b> Scansiona → inquadra il codice a barre (ISBN, inizia con 978) → titolo e autori arrivano da soli → scegli scaffale e genere → Aggiungi.</p>
-      <p><b>Prestito:</b> scansiona il libro → Presta → nome e classe.</p>
+      <p><b>Prestito:</b> scansiona il libro → Presta → nome e classe. Senza scansione: <b>Prestiti → + Nuovo prestito</b>, scegli il libro e poi la classe e il nome.</p>
       <p><b>Restituzione:</b> scansiona il libro → Restituito (oppure dalla scheda Prestiti).</p>` : ''}
       <p class="piccolo">Sul telefono: dal menu del browser scegli “Aggiungi a schermata Home” per averla come un'app.</p>
     </div>`;
