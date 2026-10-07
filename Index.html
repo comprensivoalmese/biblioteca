@@ -921,7 +921,7 @@ function modalitaFoto() {
 }
 if (!dalVivo) modalitaFoto();
 /* Dentro Apps Script la fotocamera dal vivo e' bloccata: se nelle Impostazioni c'e' l'indirizzo della pagina
-   scanner/index.html (https, fuori da Google) il pulsante "Fotocamera dal vivo" la apre e, letto il codice,
+   docs/index.html (https, fuori da Google) il pulsante "Fotocamera dal vivo" la apre e, letto il codice,
    torna qui con ?isbn=... */
 function linkDalVivo() {
   const b = $('#btn-dal-vivo'), st = S.stato || {};

@@ -39,7 +39,7 @@ const IMPOSTAZIONI_INIZIALI = [
   ['Libri per alunno', 2],
   ['Blocca chi ha ritardi', 'si'],
   ['Solo alunni degli elenchi', 'si'],
-  // Indirizzo della pagina scanner/index.html (pubblicata su https): abilita "Fotocamera dal vivo" nell'app.
+  // Indirizzo della pagina docs/index.html (pubblicata su https): abilita "Fotocamera dal vivo" nell'app.
   ['Indirizzo scanner', '']
 ];
 

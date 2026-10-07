@@ -21,7 +21,7 @@ BIBLIOTECA (Drive condiviso COMPRENSIVOALMESE).
 | `Index.html` | L'app (grafica, catalogo, scanner, prestiti) |
 | `appsscript.json` | Manifest (fuso orario, permessi, pubblicazione nel dominio) |
 | `Icona.gs` | Icona dell'app in base64 (generata da `icona/crea-icona.ps1`) |
-| `scanner/` | Pagina autonoma con la **fotocamera dal vivo** (da pubblicare su https, vedi sotto) |
+| `docs/` | Pagina autonoma con la **fotocamera dal vivo** (da pubblicare su https, vedi sotto) |
 | `icona/` | Icona (lupo del Wolf Team in oro e pergamena) e script che crea `Icona.gs` |
 | `LICENZA.md`, `LICENSE` | Titolarità e condizioni d'uso |
 | `anteprima/` | Prova in locale senza Google (vedi in fondo) |
@@ -75,7 +75,7 @@ Se un giorno arrivano gli elenchi della primaria basta metterli nella stessa car
 | Blocca chi ha ritardi | si | Niente nuovi prestiti finché non restituisce i libri scaduti |
 | Solo alunni degli elenchi | si | Il nome deve essere nell'anagrafica; per docenti e personale si spunta "Non è un alunno" (nessun limite di libri) |
 | Nome biblioteca, Generi, Fasce | | Titolo dell'app e voci dei menu (separate da virgole) |
-| Indirizzo scanner | vuoto | Indirizzo https di `scanner/index.html` per la fotocamera dal vivo |
+| Indirizzo scanner | vuoto | Indirizzo https di `docs/index.html` per la fotocamera dal vivo |
 
 Le regole le controlla il server: valgono anche se qualcuno usa una versione vecchia dell'app.
 
@@ -94,12 +94,12 @@ Le regole le controlla il server: valgono anche se qualcuno usa una versione vec
 
 ## Fotocamera dal vivo (pagina scanner)
 
-La cartella `scanner/` è una pagina web a sé, che sta **fuori da Google** e quindi può usare la fotocamera del
+La cartella `docs/` è una pagina web a sé, che sta **fuori da Google** e quindi può usare la fotocamera del
 dispositivo (telefono, tablet, PC). Funziona così: nell'app tocchi **Fotocamera dal vivo** → si apre lo scanner →
 appena legge un ISBN valido torni all'app, che apre la scheda del libro (o "Nuovo libro" per i bibliotecari).
 
-1. Pubblica la cartella `scanner/` su un indirizzo **https** (la fotocamera lo richiede), per esempio con GitHub Pages
-   (Settings → Pages → cartella `/scanner`, se il piano dell'organizzazione lo consente per i repo privati) o su
+1. Pubblica la cartella `docs/` su un indirizzo **https** (la fotocamera lo richiede), per esempio con GitHub Pages
+   (Settings → Pages → cartella `/docs`, se il piano dell'organizzazione lo consente per i repo privati) o su
    qualsiasi sito della scuola. Il file `icona.png` deve restare accanto a `index.html`.
 2. Nel foglio **Impostazioni** del database scrivi l'indirizzo nella riga **Indirizzo scanner**
    (per esempio `https://comprensivoalmese.github.io/biblioteca/`). Se la riga non c'è, aggiorna il codice e riapri
