@@ -49,16 +49,21 @@ const IMPOSTAZIONI_INIZIALI = [
 /* ------------------------------------------------------------------ web app */
 
 function doGet() {
+  let titolo = 'Biblioteca';
+  try { titolo = impostazioni_().nome || titolo; } catch (e) { /* database non ancora pronto */ }
   const pagina = HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Biblioteca')
+    .setTitle(titolo) // e' il nome che compare sulla scheda del browser
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
   // Dalla schermata Home si apre a tutto schermo, come un'app.
   ['mobile-web-app-capable', 'apple-mobile-web-app-capable'].forEach(nome => {
     try { pagina.addMetaTag(nome, 'yes'); } catch (e) { /* non ammesso: pazienza */ }
   });
+  // Icona della scheda del browser e della schermata Home: Google vuole un indirizzo pubblico che finisca in .png.
+  // Quella pubblicata con lo scanner (GitHub Pages) e' sempre raggiungibile; in alternativa la copia su Drive.
   const icona = PropertiesService.getScriptProperties().getProperty('ICONA_ID');
-  // Google accetta solo indirizzi che finiscono in .png (il parametro "f" serve solo a quello).
-  if (icona) pagina.setFaviconUrl('https://drive.google.com/thumbnail?id=' + icona + '&sz=s256&f=.png');
+  const urlIcona = SCANNER_PREDEFINITO ? SCANNER_PREDEFINITO.replace(/\/?$/, '/') + 'icona.png'
+    : (icona ? 'https://drive.google.com/thumbnail?id=' + icona + '&sz=s256&f=.png' : '');
+  if (urlIcona) { try { pagina.setFaviconUrl(urlIcona); } catch (e) { /* indirizzo rifiutato: senza icona */ } }
   return pagina;
 }
 
